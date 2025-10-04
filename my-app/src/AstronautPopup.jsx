@@ -23,7 +23,7 @@ export default function AstronautPopup() {
               background: "#fff",
               borderRadius: "24px",
               padding: "20px 24px",
-              width: "220px",    
+              width: "280px",    
               minHeight: "100px",
               boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
               textAlign: "center",
@@ -36,6 +36,7 @@ export default function AstronautPopup() {
             <p style={{ margin: "10px 0 0 0", fontSize: "0.95em", color: "black" }}>
               I’m your friendly astronaut.<br />How can I help you today?
             </p>
+            
 
             {/* Bubble tail */}
             <div
@@ -52,7 +53,9 @@ export default function AstronautPopup() {
               }}
             />
           </div>
+          
         )}
+        
 
         {/* Floating astronaut */}
         <motion.img
