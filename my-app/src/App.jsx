@@ -5,7 +5,7 @@ import './App.css'
 import AstronautPopup from "./AstronautPopup";
 import SwipeDeck from './components/SwipeDeck'
 import researchData from './data/research.json'
-import MoonOverlay from './components/MoonOverlay'
+import PlanetOverlay from './components/PlanetOverlay'
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -26,8 +26,9 @@ function App() {
     )
   }
 
-  // Moon overlay state
+  // Moon and Mars overlay state
   const [moonOpen, setMoonOpen] = useState(false)
+  const [marsOpen, setMarsOpen] = useState(false)
 
   useEffect(() => {
     // If the page loads on /moon, open the overlay
@@ -124,20 +125,26 @@ function App() {
           alt="Moon"
           role="button"
           onClick={() => {
-            // open overlay and push URL without reload
             setMoonOpen(true)
             try { window.history.pushState({}, '', '/moon') } catch (e) {}
           }}
         />
-        <a href="https://react.dev" target="_blank">
-          <img src={marsButton} className="mars" alt="Mars" />
-        </a>
+        <img
+          src={marsButton}
+          className="mars"
+          alt="Mars"
+          role="button"
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            setMarsOpen(true)
+            try { window.history.pushState({}, '', '/mars') } catch (e) {}
+          }}
+        />
       </div>
 
-      {/* Moon overlay handled by component */}
-      <MoonOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} />
-
-      {/* Swipe deck moved into moon overlay */}
+      {/* Planet overlays for Moon and Mars */}
+      <PlanetOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} name="Moon"/>
+      <PlanetOverlay open={marsOpen} onClose={() => setMarsOpen(false)} items={researchData} name="Mars"/>
 
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />

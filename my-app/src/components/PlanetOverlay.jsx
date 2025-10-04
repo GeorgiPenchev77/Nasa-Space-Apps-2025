@@ -1,7 +1,7 @@
 import React from 'react'
 import SwipeDeck from './SwipeDeck'
 
-export default function MoonOverlay({ open, onClose, items = [] }) {
+export default function PlanetOverlay({ open, onClose, items = [], name }) {
   if (!open) return null
   return (
     <div className="moon-overlay" role="dialog" aria-modal="true">
@@ -19,8 +19,8 @@ export default function MoonOverlay({ open, onClose, items = [] }) {
         >
           ✕
         </button>
-        <h1>Moon Research</h1>
-        <p style={{ color: '#bbb' }}>Swipe through moon-related research.</p>
+        <h1>{name} Research</h1>
+        <p style={{ color: '#bbb' }}>Swipe through {name.toLowerCase()}-related research.</p>
         <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
           <SwipeDeck items={items} />
         </div>
