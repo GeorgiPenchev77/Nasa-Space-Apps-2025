@@ -430,19 +430,26 @@ html, body, #root {
 .article-tags {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   justify-content: flex-start;
-  margin-top: auto;
+  margin-top: 0;
 }
 
 .article-tag {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #e6c637 0%, #c50e0e 100%);
   color: white;
   padding: 5px 12px;
   border-radius: 15px;
   font-size: 12px;
   text-transform: capitalize;
 }
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: 630px;
+  margin-top: 10px;
+}
+
 
 .read-more-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

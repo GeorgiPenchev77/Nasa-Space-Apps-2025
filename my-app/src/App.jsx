@@ -165,12 +165,14 @@ function App() {
                 <div key={article.id} className="search-result-item">
                   <h4>{article.title}</h4>
                   <p>{article.description}</p>
+                <div className="button-row">
                   <div className="article-tags">
                     {article.tags.map(tag => (
                       <span key={tag} className="article-tag">{tag}</span>
                     ))}
                   </div>
                   <button className="read-more-btn">Read More →</button>
+                </div>
                 </div>
               ))
             ) : (
