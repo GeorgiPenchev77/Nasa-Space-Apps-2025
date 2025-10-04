@@ -2,6 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import AstronautPopup from "./AstronautPopup";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -28,6 +29,10 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <div className="relative min-h-screen bg-gray-950 text-white">
+        <h1 className="p-10 text-3xl font-bold">Welcome to SpaceHub 🚀</h1>
+        <AstronautPopup />
+      </div>
     </>
   )
 }
