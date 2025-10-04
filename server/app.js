@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import 'dotenv/config';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import searchCSV from './search.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +14,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-// Chat endpoint
+// Chat endpoint -- needs some work in trimming the response and making it look good
 app.post("/api/chat", async (req, res) => {
   try {
     const { message } = req.body;
@@ -36,9 +37,9 @@ app.post("/api/chat", async (req, res) => {
 });
 
 
-// Search links endpoint
+// Search links endpoint - good
 app.get('/search-links', async (req, res) => {
-  const { query } = req.query;
+  const { query } = req.body;
   if (!query) return res.status(400).json({ error: 'Query parameter required' });
 
   try {
@@ -87,6 +88,25 @@ try{
     res.status(500).json({ error: "Failed to process request" });
   }
 
+});
+
+app.get("/api/get-pmc-xml", async (req, res) => {
+  const { pmcId } = req.query;
+  if (!pmcId) return res.status(400).send("Missing pmcId");
+
+  try {
+    const xmlUrl = `https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/${pmcId}/unicode`;
+    const response = await fetch(xmlUrl);
+
+    if (!response.ok) throw new Error("Failed to fetch from NCBI");
+    const xml = await response.text();
+
+    res.set("Content-Type", "application/xml");
+    res.send(xml);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error fetching XML" });
+  }
 });
 
 app.listen(PORT, () => {

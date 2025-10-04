@@ -1,7 +1,7 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 
-export default function searchCSV(query, folderPath = './csv-files') {
+export default function searchCSV(query, folderPath = '../resources') {
   return new Promise((resolve, reject) => {
     const results = [];
     fs.readdir(folderPath, (err, files) => {
