@@ -34,8 +34,7 @@ export default function AstronautPopup() {
               👨‍🚀 Hey there, Earthling!
             </h2>
             <p style={{ margin: "10px 0 0 0", fontSize: "0.95em", color: "black" }}>
-              I’m your friendly astronaut.<br />
-                How can I help you today?
+              I’m your friendly astronaut.<br />How can I help you today?
             </p>
 
             {/* Bubble tail */}
