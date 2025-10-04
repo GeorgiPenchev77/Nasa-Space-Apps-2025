@@ -34,9 +34,36 @@ export default function AstronautPopup() {
               👨‍🚀 Hey there, Earthling!
             </h2>
             <p style={{ margin: "10px 0 0 0", fontSize: "0.95em", color: "black" }}>
-              I’m your friendly astronaut.<br />How can I help you today?
+              I'm your friendly astronaut.<br />How can I help you today?
             </p>
             
+            {/* Chat button */}
+            <button
+              onClick={() => window.location.href = '/chatroom'}
+              style={{
+                marginTop: "15px",
+                padding: "10px 20px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                color: "white",
+                border: "none",
+                borderRadius: "20px",
+                fontSize: "0.9em",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "transform 0.2s, box-shadow 0.2s",
+                boxShadow: "0 2px 10px rgba(102, 126, 234, 0.3)",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 2px 10px rgba(102, 126, 234, 0.3)";
+              }}
+            >
+              🚀 Go to Chatroom
+            </button>
 
             {/* Bubble tail */}
             <div
