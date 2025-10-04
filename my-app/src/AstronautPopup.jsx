@@ -89,8 +89,8 @@ export default function AstronautPopup() {
           src={lectonauta}
           alt="Lectonauta"
           style={{
-            width: "100px",
-            height: "150px",
+            width: "80px",
+            height: "110px",
             cursor: "pointer",
           }}
           onClick={() => setOpen((prev) => !prev)}
