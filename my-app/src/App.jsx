@@ -3,6 +3,8 @@ import moonButton from './assets/moon.png'
 import marsButton from './assets/mars.png'
 import './App.css'
 import AstronautPopup from "./AstronautPopup";
+import SwipeDeck from './components/SwipeDeck'
+import researchData from './data/research.json'
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -137,10 +139,15 @@ function App() {
           <div className="moon-overlay-inner">
             <button className="moon-overlay-close" onClick={() => { setMoonOpen(false); window.history.back() }}>✕</button>
             <h1>Moon Research</h1>
-            <p>This is a clean moon page. Add detailed content here.</p>
+            <p style={{ color: '#bbb' }}>Swipe through moon-related research.</p>
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+              <SwipeDeck items={researchData} />
+            </div>
           </div>
         </div>
       )}
+
+      {/* Swipe deck moved into moon overlay */}
 
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />
