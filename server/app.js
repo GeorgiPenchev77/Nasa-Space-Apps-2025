@@ -23,14 +23,15 @@ try{
   const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
   const prompt = "Explain in simpler terms(under 50 words) the following: " + text;
-
-  const result = await model.generateContent(prompt);
+  console.log(prompt); // debug the prompt
+  
+  const result = await model.generateContent(prompt);  
   const responseText = result.response.text();
-  console.log(responseText);  
-  console.log(text);
+
+  res.json({ responseText });
   }
   catch(error){
-    console.error("OpenAI API error:", error);
+    console.error("Gemini API error:", error);
     res.status(500).json({ error: "Failed to process request" });
   }
 
