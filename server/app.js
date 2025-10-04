@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import geminiRoutes from "./routes/geminiRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import pubRoutes from "./routes/pubRoutes.js";
+import articleRoutes from "./routes/articleRoutes.js";
+
+
 
 dotenv.config();
 
@@ -19,6 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 // routes
+app.use("/api/articles", articleRoutes);
 app.use("/api/gemini", geminiRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/pubs", pubRoutes);
