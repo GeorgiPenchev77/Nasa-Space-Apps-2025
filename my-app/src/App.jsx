@@ -5,6 +5,7 @@ import './App.css'
 import AstronautPopup from "./AstronautPopup";
 import SwipeDeck from './components/SwipeDeck'
 import researchData from './data/research.json'
+import MoonOverlay from './components/MoonOverlay'
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -133,19 +134,8 @@ function App() {
         </a>
       </div>
 
-      {/* Full-screen clean overlay for moon 'page' */}
-      {moonOpen && (
-        <div className="moon-overlay" role="dialog" aria-modal="true">
-          <div className="moon-overlay-inner">
-            <button className="moon-overlay-close" onClick={() => { setMoonOpen(false); window.history.back() }}>✕</button>
-            <h1>Moon Research</h1>
-            <p style={{ color: '#bbb' }}>Swipe through moon-related research.</p>
-            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-              <SwipeDeck items={researchData} />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Moon overlay handled by component */}
+      <MoonOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} />
 
       {/* Swipe deck moved into moon overlay */}
 
