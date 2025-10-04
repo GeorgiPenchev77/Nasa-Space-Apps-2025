@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import moonButton from './assets/moon.png'
+import marsButton from './assets/mars.png'
 import './App.css'
 import AstronautPopup from "./AstronautPopup";
 
@@ -8,16 +8,18 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
+    <div className="space-background">
+      <h1 className="gradient-text">Knowledge</h1>
+      <h2 className="sub-text">Click on the planets for articles..blablabla</h2>
       <div>
         <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+          <img src={moonButton} className="moon" alt="Moon" />
         </a>
         <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          <img src={marsButton} className="mars" alt="Mars" />
         </a>
       </div>
-      <h1>Vite + React</h1>
+
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -33,7 +35,7 @@ function App() {
         <h1 className="p-10 text-3xl font-bold">Welcome to SpaceHub 🚀</h1>
         <AstronautPopup />
       </div>
-    </>
+    </div>
   )
 }
 

@@ -1,24 +1,74 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; 
+}
+
+.space-background {
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+  background: url('./assets/background.jpg') no-repeat center center;
+  background-size: cover;
+  background-position: center center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.gradient-text {
+  font-size: 6rem;
+  font-weight: bold;
+
+  background: linear-gradient(135deg, #ffff 0%, #c8a3ed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+
+  padding-top: 3.5rem;
+}
+
+.sub-text {
+  color: white;
+  font-size: 1.2rem;
+  padding-top: 0.5rem;
+}
+
+.mars {
+  height: 25em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
-.logo:hover {
+.mars:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
-.logo.react:hover {
+.mars:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-@keyframes logo-spin {
+
+.moon {
+  height: 15em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.moon:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.moon:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+
+@keyframes mars {
   from {
     transform: rotate(0deg);
   }
