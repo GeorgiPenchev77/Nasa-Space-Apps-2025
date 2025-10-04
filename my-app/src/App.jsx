@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import moonButton from './assets/moon.png'
 import marsButton from './assets/mars.png'
 import './App.css'
@@ -22,6 +22,21 @@ function App() {
         : [...prev, tag]
     )
   }
+
+  // Moon overlay state
+  const [moonOpen, setMoonOpen] = useState(false)
+
+  useEffect(() => {
+    // If the page loads on /moon, open the overlay
+    if (window.location.pathname === '/moon') setMoonOpen(true)
+    const onPop = () => {
+      // close overlay if navigating away
+      if (window.location.pathname !== '/moon') setMoonOpen(false)
+      else setMoonOpen(true)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
 
   const removeTag = (tag) => {
     setSelectedTags(prev => prev.filter(t => t !== tag))
@@ -100,13 +115,32 @@ function App() {
       )}
 
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={moonButton} className="moon" alt="Moon" />
-        </a>
+        <img
+          src={moonButton}
+          className="moon"
+          alt="Moon"
+          role="button"
+          onClick={() => {
+            // open overlay and push URL without reload
+            setMoonOpen(true)
+            try { window.history.pushState({}, '', '/moon') } catch (e) {}
+          }}
+        />
         <a href="https://react.dev" target="_blank">
           <img src={marsButton} className="mars" alt="Mars" />
         </a>
       </div>
+
+      {/* Full-screen clean overlay for moon 'page' */}
+      {moonOpen && (
+        <div className="moon-overlay" role="dialog" aria-modal="true">
+          <div className="moon-overlay-inner">
+            <button className="moon-overlay-close" onClick={() => { setMoonOpen(false); window.history.back() }}>✕</button>
+            <h1>Moon Research</h1>
+            <p>This is a clean moon page. Add detailed content here.</p>
+          </div>
+        </div>
+      )}
 
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />
