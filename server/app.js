@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import 'dotenv/config';
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,9 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.post("/api/analyze", async (req, res) => {
   try {
@@ -19,14 +17,11 @@ app.post("/api/analyze", async (req, res) => {
 
     if (!text) return res.status(400).json({ error: "Missing 'text'" });
 
-    const response = await client.responses.create({
-      model: "gpt-5",
-      input: `Summarize this research article:\n\n${text}`,
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-Pro"});
 
-    res.json({
-      summary: response.output[0].content[0].text,
-    });
+    const response = await model.generateContent(text);
+    const reply = response.response;
+    console.log(reply);
 
   } catch (error) {
     console.error("OpenAI API error:", error);
