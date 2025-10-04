@@ -67,7 +67,7 @@ export default function ArticleReader(){
       <h1 className="text-3xl font-bold mb-4">Publications</h1>
 
             <button
-              onClick={() => loadArticle("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11094041/")}
+              onClick={() => loadArticle("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5515519/")}
               className="text-blue-600 hover:underline"
             >
             </button>
