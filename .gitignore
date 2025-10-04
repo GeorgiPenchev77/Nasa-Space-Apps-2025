@@ -1,2 +1,18 @@
-my-app/.env
-server/.env
+# Node dependencies
+my-app/node_modules
+server/node_modules
+node_modules
+
+# Environment files
+*.env
+
+# Logs
+*.log
+
+# Build outputs
+dist
+build
+
+# System files
+.DS_Store
+Thumbs.db
