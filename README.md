@@ -4,7 +4,7 @@ Project for the Nasa Space Apps Challenge hackathon 2025. For this year, our tea
 ## 🚀 Project Overview
 NASA has conducted hundreds of bioscience studies from space missions, making research difficult and hard to understand. Our solution? **Knowledge Station**, an AI-based application to help users explore NASA’s bioscience publications easily and interactively. The platform summarizes, structures, and visualizes decades of space biology research in one click; making it possible for scientists, students, and mission planners to discover insights faster.
 
----
+
 
 ## 🎯 Main Goal
 Build a website that uses **AI** to summarize and organize NASA’s bioscience studies, allowing users to:
@@ -12,7 +12,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 - 🏷️ Filter studies by tags (e.g., *plants*, *muscles*, *space radiation*)  
 - 👩‍🚀 Chat with an **Astronaut AI assistant** to get explanationsand recommendations  
 
----
+
 
 ## 🧠 Key Features
 
@@ -23,7 +23,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 
 ### 📚 Article View – Explore by Tags
 - Displays all articles related to a selected tag  
-- Each article card includes a title and short abstract  
+- Each article card includes a title and a short abstract  
 - Click any card to open detailed information  
 
 ### 💬 Astronaut AI – Your Space Research Buddy
@@ -31,7 +31,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 - Users can chat directly with the AI assistant  
 - The AI summarizes papers, answers questions, and suggests related studies  
 
----
+
 ## Supporting Articles
 
 **Active learning**: https://pubmed.ncbi.nlm.nih.gov/24821756/
@@ -42,14 +42,14 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 
 **Personalized Learning**: https://scholarworks.uttyler.edu/cgi/viewcontent.cgi?params=/context/education_grad/article/1007&path_info=reviewed.Jorly_Thomas___Final_Dissertation_with_completed_signage_page_and_signature___UT_Tyler__EVALUATION_OF_PERSONALIZED_LEARNING_7_21_23__1_.pdf
 
----
+
 
 ## 💡 Impact
 - Makes NASA’s bioscience data **accessible** and **interactive**  
 - Encourages **scientists, students, and enthusiasts** to explore complex research easily  
 - Promotes **open science** by transforming static data into a dynamic knowledge experience 
 
----
+
 
 ## 🧩 Technology Stack
 - **Frontend:** React + Vite  
@@ -57,7 +57,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 - **AI Integration:** OpenAI API / LLM Assistant  
 - **Data:** NASA Bioscience Publications Dataset  
 
----
+
 
 ## Team Members:
 * Nika Balouchzadeh
