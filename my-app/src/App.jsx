@@ -1,6 +1,8 @@
 import React from "react";
 import { RouterProvider, Link } from "react-router-dom";
 import router from "./router";
+import apiClient from "../../server/utils/apiClient";
+
 
 export default function App() {
   return (

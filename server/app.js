@@ -61,7 +61,7 @@ app.listen(PORT, () => {
   }
   });
 
-  const cachePath = path.join(process.cwd(), "cache", "tags.json"
+  const cachePath = path.join(process.cwd(), "../../resources/cache", "tags.json"
 );
 
 if(!fs.existsSync(cachePath)){
