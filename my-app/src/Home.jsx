@@ -8,42 +8,71 @@ import PlanetOverlay from './components/PlanetOverlay'
 import ArticleReader from './ArticleViewer'
 import TagGrid from './components/TagGrid'
 import Chatbot from './Chatbot'
+import tags from '../../server/cache/tags.json'
 
 function Home() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [showFilterPopup, setShowFilterPopup] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [searchResults, setSearchResults] = useState(null)
   const [moonOpen, setMoonOpen] = useState(false)
   const [marsOpen, setMarsOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
-
-  // Temporary mock articles
-  const allArticles = [
-    { id: 1, title: "The Moon's Formation", description: "How Earth's satellite came to be", tags: ['moon'] },
-    { id: 2, title: "Lunar Phases Explained", description: "Understanding the moon's cycle", tags: ['moon'] },
-    { id: 3, title: "Apollo Missions", description: "Humanity's journey to the moon", tags: ['moon'] },
-    { id: 4, title: "Moon Base Alpha", description: "Future of lunar colonization", tags: ['moon'] },
-    { id: 5, title: "Mars Rover Discoveries", description: "Latest findings from Perseverance", tags: ['mars'] },
-    { id: 6, title: "Water on Mars", description: "Evidence of ancient oceans", tags: ['mars'] },
-    { id: 7, title: "Terraforming Mars", description: "Making Mars habitable", tags: ['mars'] },
-    { id: 8, title: "Journey to Mars", description: "Planning human missions", tags: ['mars'] }
-  ]
+  const [tagScrollPosition, setTagScrollPosition] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const resultsPerPage = 5
 
   const handleSearch = (e) => {
     e.preventDefault()
-    let results = allArticles
+    let results = []
 
+    // If tags are selected, get articles for those tags
     if (selectedTags.length > 0) {
-      results = results.filter(article =>
-        article.tags.some(tag => selectedTags.includes(tag))
-      )
+      selectedTags.forEach(tag => {
+        if (tags[tag]) {
+          tags[tag].forEach(url => {
+            // Avoid duplicates
+            if (!results.find(r => r.url === url)) {
+              results.push({
+                id: url,
+                url: url,
+                title: `Research Article - ${tag}`,
+                description: `Article from ${tag} category`,
+                tags: [tag]
+              })
+            }
+          })
+        }
+      })
     }
 
+    // If search query exists, filter by tag name
     if (searchQuery.trim()) {
-      results = results.filter(article =>
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.description.toLowerCase().includes(searchQuery.toLowerCase())
+      const query = searchQuery.toLowerCase()
+      const matchingTags = Object.keys(tags).filter(tag => 
+        tag.toLowerCase().includes(query)
+      )
+
+      matchingTags.forEach(tag => {
+        tags[tag].forEach(url => {
+          // Avoid duplicates
+          if (!results.find(r => r.url === url)) {
+            results.push({
+              id: url,
+              url: url,
+              title: `Research Article - ${tag}`,
+              description: `Article from ${tag} category`,
+              tags: [tag]
+            })
+          }
+        })
+      })
+    }
+
+    // If both tags and query exist, show intersection
+    if (selectedTags.length > 0 && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      results = results.filter(article => 
+        article.tags.some(tag => tag.toLowerCase().includes(query))
       )
     }
 
@@ -70,15 +99,40 @@ function Home() {
   }, [])
 
   const removeTag = (tag) => setSelectedTags(prev => prev.filter(t => t !== tag))
-  const clearSearch = () => { setSearchResults(null); setSearchQuery(''); setSelectedTags([]) }
-  const handleTagClick = (tag) => setSelectedTags(prev => [...prev, tag])
+  const clearSearch = () => { 
+    setSearchResults(null)
+    setSearchQuery('')
+    setSelectedTags([])
+    setCurrentPage(1)
+  }
+  const handleTagClick = (tag) => {
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        return prev
+      }
+      return [...prev, tag]
+    })
+    setCurrentPage(1)
+  }
+
+  const scrollTags = (direction) => {
+    const container = document.querySelector('.tags-scroll-container')
+    if (container) {
+      const scrollAmount = 150
+      const newPosition = direction === 'left' 
+        ? Math.max(0, tagScrollPosition - scrollAmount)
+        : Math.min(container.scrollWidth - container.clientWidth, tagScrollPosition + scrollAmount)
+      
+      container.scrollTo({ left: newPosition, behavior: 'smooth' })
+      setTagScrollPosition(newPosition)
+    }
+  }
 
   return (
     <div className="space-background">
       <h1 className="gradient-text">Knowledge Station</h1>
       <h2 className="sub-text">Use our search box, tap a planet for its related articles, or chat with our astronaut!</h2>
 
-      {/* 🌙 Moon | Search | Mars */}
       {searchResults === null && (
         <div className="planets-search-wrapper">
           {/* Moon button */}
@@ -111,20 +165,61 @@ function Home() {
               </button>
             </div>
 
-            <button
-              type="button"
-              className="filter-button"
-              onClick={() => setShowFilterPopup(!showFilterPopup)}
-            >
-              Filter
+            <button type="submit" className="filter-button">
+              Search
             </button>
 
-            {selectedTags.map(tag => (
-              <div key={tag} className="tag-chip">
-                <span>{tag.charAt(0).toUpperCase() + tag.slice(1)}</span>
-                <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>×</button>
+            {selectedTags.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', maxWidth: '400px' }}>
+                <button
+                  type="button"
+                  onClick={() => scrollTags('left')}
+                  style={{
+                    background: 'rgba(102, 102, 102, 0.1)',
+                    border: 'none',
+                    color: 'white',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    fontSize: '16px'
+                  }}
+                >
+                  ‹
+                </button>
+                <div 
+                  className="tags-scroll-container"
+                  style={{ 
+                    display: 'flex', 
+                    gap: '8px', 
+                    overflowX: 'hidden',
+                    scrollBehavior: 'smooth',
+                    flex: 1
+                  }}
+                >
+                  {selectedTags.map(tag => (
+                    <div key={tag} className="tag-chip" style={{ flexShrink: 0 }}>
+                      <span>{tag.charAt(0).toUpperCase() + tag.slice(1)}</span>
+                      <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>×</button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => scrollTags('right')}
+                  style={{
+                    background: 'rgba(255,255,255,0.1)',
+                    border: 'none',
+                    color: 'white',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    fontSize: '16px'
+                  }}
+                >
+                  ›
+                </button>
               </div>
-            ))}
+            )}
           </form>
 
           {/* Mars button */}
@@ -145,22 +240,21 @@ function Home() {
       <PlanetOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} name="Moon" />
       <PlanetOverlay open={marsOpen} onClose={() => setMarsOpen(false)} items={researchData} name="Mars" />
 
-      {/* Filter popup */}
-      {showFilterPopup && (
-        <div className="filter-popup">
-          <div className="filter-popup-content">
-            <h3>Filter by Tags</h3>
-            <div className="tag-options">
-              <button className={`tag-option ${selectedTags.includes('moon') ? 'selected' : ''}`} onClick={() => toggleTag('moon')}>Moon</button>
-              <button className={`tag-option ${selectedTags.includes('mars') ? 'selected' : ''}`} onClick={() => toggleTag('mars')}>Mars</button>
-            </div>
-            <button className="close-filter-button" onClick={() => setShowFilterPopup(false)}>Apply Filters</button>
+      {/* Tag Grid */}
+      {searchResults === null && (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          width: '100%', 
+          padding: '0 20px',
+          margin: '0 auto'
+        }}>
+          <div style={{ maxWidth: '1200px', width: '100%' }}>
+            <TagGrid onTagClick={handleTagClick} selectedTags={selectedTags} />
           </div>
         </div>
       )}
-
-      {/* Tag Grid */}
-      {searchResults === null && <TagGrid onTagClick={handleTagClick} />}
 
       {/* Search Results */}
       {searchResults !== null && (
@@ -171,20 +265,49 @@ function Home() {
           </div>
           <div className="search-results-list">
             {searchResults.length > 0 ? (
-              searchResults.map(article => (
-                <div key={article.id} className="search-result-item">
-                  <h4>{article.title}</h4>
-                  <p>{article.description}</p>
-                  <div className="button-row">
-                    <div className="article-tags">
-                      {article.tags.map(tag => (
-                        <span key={tag} className="article-tag">{tag}</span>
-                      ))}
+              <>
+                {searchResults
+                  .slice((currentPage - 1) * resultsPerPage, currentPage * resultsPerPage)
+                  .map(article => (
+                    <div key={article.id} className="search-result-item">
+                      <h4>{article.title}</h4>
+                      <p>{article.description}</p>
+                      <div className="button-row">
+                        <div className="article-tags">
+                          {article.tags.map(tag => (
+                            <span key={tag} className="article-tag">{tag}</span>
+                          ))}
+                        </div>
+                        <a href={article.url} target="_blank" rel="noopener noreferrer" className="read-more-btn">
+                          Read More →
+                        </a>
+                      </div>
                     </div>
-                    <button className="read-more-btn">Read More →</button>
+                  ))}
+                
+                {/* Pagination Controls */}
+                {searchResults.length > resultsPerPage && (
+                  <div className="pagination-controls" style={{ justifyContent: 'center', marginTop: '30px' }}>
+                    <button
+                      className="pagination-btn"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      ← Previous
+                    </button>
+                    <span className="page-indicator">
+                      Page {currentPage} of {Math.ceil(searchResults.length / resultsPerPage)}
+                    </span>
+                    <button
+                      className="pagination-btn"
+                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(searchResults.length / resultsPerPage), prev + 1))}
+                      disabled={currentPage === Math.ceil(searchResults.length / resultsPerPage)}
+                    >
+                      Next →
+                    </button>
                   </div>
-                </div>
-              ))
+                )}
+              </>
             ) : (
               <div className="no-results"><p>No articles found matching your search.</p></div>
             )}

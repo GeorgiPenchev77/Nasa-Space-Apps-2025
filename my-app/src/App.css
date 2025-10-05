@@ -31,15 +31,14 @@ html, body, #root {
   background-clip: text;
   display: inline-block;
 
-  padding-top: 2rem;
+  padding-top: 1.5rem;
 }
 
 .sub-text {
   color: white;
   font-size: 1.2rem;
   padding-top: 0.5rem;
-  padding-bottom: 2rem;
-  padding-bottom: 2rem;
+
 }
 
 .search-container {
@@ -142,36 +141,6 @@ html, body, #root {
 
 .filter-button:hover {
   border-color: rgba(102, 126, 234, 0.8);
-}
-
-.filter-popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.filter-popup-content {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 400px;
-  width: 90%;
-}
-
-.filter-popup-content h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: white;
-  text-align: center;
 }
 
 .tag-options {

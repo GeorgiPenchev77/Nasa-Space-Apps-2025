@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import tags from '../../../server/cache/tags.json'
 
-function TagGrid({ onTagClick }) {
+function TagGrid({ onTagClick, selectedTags = [] }) {
   const [currentPage, setCurrentPage] = useState(1)
   const tagsPerPage = 35 // 7 columns x 5 rows
 
@@ -25,15 +25,22 @@ function TagGrid({ onTagClick }) {
   return (
     <div className="tag-grid-container">
       <div className="tag-grid">
-        {getCurrentPageTags().map(tag => (
-          <div 
-            key={tag} 
-            className="tag-chip-grid"
-            onClick={() => onTagClick && onTagClick(tag)}
-          >
-            <span>{tag}</span>
-          </div>
-        ))}
+        {getCurrentPageTags().map(tag => {
+          const isSelected = selectedTags.includes(tag)
+          return (
+            <div
+              key={tag}
+              className={`tag-chip-grid ${isSelected ? 'tag-selected' : ''}`}
+              onClick={() => !isSelected && onTagClick && onTagClick(tag)}
+              style={{
+                opacity: isSelected ? 0.5 : 1,
+                cursor: isSelected ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <span>{tag}</span>
+            </div>
+          )
+        })}
       </div>
       <div className="pagination-controls">
         <button
