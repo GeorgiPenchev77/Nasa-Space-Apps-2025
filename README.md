@@ -5,3 +5,17 @@ The project of team "Obidient Monkeys" in Nasa Space Apps Challenge hackathon 20
 
 # License 
 The project is free to use and licensed under the [MIT License](Nasa-Space-Apps-2025/License)
+
+# Contributors
+
+# Description
+
+# Features
+
+# Installations
+
+# Approach
+
+# How to Run Project
+
+# Result
