@@ -2,11 +2,7 @@
 Project for the Nasa Space Apps Challenge hackathon 2025. For this year, our team chose to work on the "Build a Space Biology Knowledge Engine" challenge.
 
 ## 🚀 Project Overview
-NASA has conducted hundreds of bioscience studies from space missions  but finding and understanding them all is difficult.  
-**Knowledge Station** is an AI-powered web application that helps users explore NASA’s bioscience publications easily and interactively.
-
-Our platform summarizes, organizes, and visualizes decades of space biology research so that scientists, students, and mission planners can discover insights faster.
-
+NASA has conducted hundreds of bioscience studies from space missions, making research difficult and hard to understand. Our solution? Knowledge Station, an AI-based application to help users explore NASA’s bioscience publications easily and interactively. The platform summarizes, structures, and visualizes decades of space biology research in one click; making it possible for scientists, students, and mission planners to discover insights faster.
 ---
 
 ## 🎯 Main Goal
