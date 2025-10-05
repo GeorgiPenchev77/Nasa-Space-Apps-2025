@@ -1,5 +1,16 @@
 import { getGeminiModel } from "../utils/geminiClient.js";
 
+// helper to clean and format text as a single readable string
+const formatText = (text) => {
+  return text
+    .replace(/(\*\*|\*)/g, "")     // remove Markdown bold/italic
+    .replace(/\\n/g, " ")          // remove escaped newlines
+    .replace(/\n/g, " ")           // remove actual newlines
+    .replace(/ +/g, " ")           // normalize extra spaces
+    .replace(/([a-zA-Z0-9])\.([A-Z])/g, "$1. $2") // ensure spacing after periods
+    .trim();
+};
+
 export const chat = async (req, res) => {
   try {
     const { message } = req.body;
@@ -9,7 +20,7 @@ export const chat = async (req, res) => {
 
     const model = getGeminiModel("gemini-2.5-pro");
     const result = await model.generateContent(message);
-    const reply = result.response.text();
+    const reply = formatText(result.response.text());
 
     res.json({ reply });
   } catch (error) {
@@ -28,9 +39,9 @@ export const simplify = async (req, res) => {
     const model = getGeminiModel("gemini-2.5-flash");
     const prompt = `Explain in simpler terms (under 50 words): ${text}`;
     const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = formatText(result.response.text());
 
-    res.json({ responseText });
+    res.json({ reply: responseText });
   } catch (error) {
     console.error("Gemini simplify error:", error);
     res.status(500).json({ error: "Failed to process request" });

@@ -7,9 +7,9 @@ export const searchLinks = async (req, res) => {
   try {
     const results = await searchCSV(query);
     const links = results
-      .map(r => Object.values(r.row)[1])
-      .filter(Boolean)
-      .filter((link, idx, arr) => arr.indexOf(link) === idx);
+      .map(r => r.link) // take the link field directly
+      .filter(link => typeof link === "string" && link.startsWith("http"))
+      .filter((link, idx, arr) => arr.indexOf(link) === idx); // deduplicate
 
     res.json({ query, links });
   } catch (error) {

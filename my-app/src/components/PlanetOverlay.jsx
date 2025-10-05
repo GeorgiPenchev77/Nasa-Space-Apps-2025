@@ -19,8 +19,8 @@ export default function PlanetOverlay({ open, onClose, items = [], name }) {
         >
           ✕
         </button>
-        <h1>{name} Research</h1>
-        <p style={{ color: '#bbb' }}>Swipe through {name.toLowerCase()}-related research.</p>
+        <h1>{name} Articles</h1>
+        <p style={{ color: '#bbb' }}>Swipe through {name.toLowerCase()}-related articles.</p>
         <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
           <SwipeDeck items={items} />
         </div>
