@@ -13,7 +13,20 @@ import useTextCapture from "./hooks/useTextCapture";
 import { sendHighlightToBackend } from "./utils/api";
 
 function App() {
-  useTextCapture((text) => sendHighlightToBackend(text));
+  useEffect(() => {
+  function handleMouseUp() {
+    const selectedText = window.getSelection().toString().trim();
+    if (selectedText) {
+      console.log("Highlighted text:", selectedText);
+      sendHighlightToBackend(selectedText);
+    }
+  }
+
+  document.addEventListener("mouseup", handleMouseUp);
+  return () => document.removeEventListener("mouseup", handleMouseUp);
+}, []);
+
+
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilterPopup, setShowFilterPopup] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])

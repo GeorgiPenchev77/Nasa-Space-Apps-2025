@@ -1,5 +1,7 @@
 export async function sendHighlightToBackend(text) {
   try {
+    console.log("Highlighted text:", text); 
+
     const response = await fetch("http://localhost:3000/api/highlight", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
