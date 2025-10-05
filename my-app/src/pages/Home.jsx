@@ -4,9 +4,9 @@ import marsButton from './assets/mars.png'
 import './App.css'
 import AstronautPopup from "./AstronautPopup"
 import researchData from './data/research.json'
-import PlanetOverlay from './components/PlanetOverlay'
+import PlanetOverlay from '../components/PlanetOverlay'
 import ArticleReader from './ArticleViewer'
-import TagGrid from './components/TagGrid'
+import TagGrid from '../components/TagGrid'
 import Chatbot from './Chatbot'
 
 function Home() {
@@ -210,3 +210,4 @@ function Home() {
 }
 
 export default Home
+

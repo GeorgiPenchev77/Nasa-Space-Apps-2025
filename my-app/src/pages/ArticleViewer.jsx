@@ -1,7 +1,8 @@
+/*
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import LinkTree from "./components/LinkTree";
-import data from "../../resources/cache/tags.json"; // your raw JSON with alternating [title, url, title, url...]
+import LinkTree from "../components/LinkTree";
+import data from "../../../resources/cache/tags.json"; // your raw JSON with alternating [title, url, title, url...]
 
 // helper to normalize raw arrays into {title, url} objects
 const normalizeArticles = (arr) => {
@@ -107,3 +108,4 @@ export default function ArticleViewer() {
     </div>
   );
 }
+*/
