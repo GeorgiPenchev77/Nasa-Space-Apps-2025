@@ -39,7 +39,7 @@ export default function AstronautPopup() {
             
             {/* Chat button */}
             <button
-              onClick={() => window.location.href = '/chatroom'}
+              onClick={() => window.open('/chatroom', '_blank', 'noopener,noreferrer')}
               style={{
                 marginTop: "15px",
                 padding: "10px 20px",
