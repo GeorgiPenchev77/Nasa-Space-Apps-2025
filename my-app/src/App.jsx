@@ -7,18 +7,16 @@ import SwipeDeck from './components/SwipeDeck'
 import researchData from './data/research.json'
 import PlanetOverlay from './components/PlanetOverlay'
 import Chatbot from './Chatbot' 
-import ArticleReader from './ArticleViewer'  // 👈 import your chatbot
-
-
+import ArticleReader from './ArticleViewer'
+import tags from '../../server/cache/tags.json'
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilterPopup, setShowFilterPopup] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [searchResults, setSearchResults] = useState(null)
-  const [moonOpen, setMoonOpen] = useState(false)
-
-    // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
+  
+  // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
   const allArticles = [
     { id: 1, title: "The Moon's Formation", description: "How Earth's satellite came to be", tags: ['moon'] },
     { id: 2, title: "Lunar Phases Explained", description: "Understanding the moon's cycle", tags: ['moon'] },
@@ -83,12 +81,11 @@ function App() {
   }
 
   const clearSearch = () => {
-  setSearchResults(null)
-  setSearchQuery('')
-  setSelectedTags([])
+    setSearchResults(null)
+    setSearchQuery('')
+    setSelectedTags([])
   }
 
-  
   return (
     <div className="space-background">
       <h1 className="gradient-text">Knowledge Station</h1>
@@ -130,7 +127,6 @@ function App() {
             </button>
           </div>
         ))}
-
       </form>
 
       {showFilterPopup && (
@@ -161,6 +157,19 @@ function App() {
         </div>
       )}
 
+      {/* Tag Grid - only show when not searching */}
+      {searchResults === null && (
+        <div className="tag-grid-container">
+          <div className="tag-grid">
+            {Object.keys(tags).map(tag => (
+              <div key={tag} className="tag-chip-grid">
+                <span>{tag}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Search Results */}
       {searchResults !== null && (
         <div className="search-results-container">
@@ -174,14 +183,14 @@ function App() {
                 <div key={article.id} className="search-result-item">
                   <h4>{article.title}</h4>
                   <p>{article.description}</p>
-                <div className="button-row">
-                  <div className="article-tags">
-                    {article.tags.map(tag => (
-                      <span key={tag} className="article-tag">{tag}</span>
-                    ))}
+                  <div className="button-row">
+                    <div className="article-tags">
+                      {article.tags.map(tag => (
+                        <span key={tag} className="article-tag">{tag}</span>
+                      ))}
+                    </div>
+                    <button className="read-more-btn">Read More →</button>
                   </div>
-                  <button className="read-more-btn">Read More →</button>
-                </div>
                 </div>
               ))
             ) : (
@@ -206,48 +215,19 @@ function App() {
               try { window.history.pushState({}, '', '/moon') } catch (e) {}
             }}
           />
-          <a href="https://react.dev" target="_blank">
-            <img src={marsButton} className="mars" alt="Mars" />
-          </a>
+          <img
+            src={marsButton}
+            className="mars"
+            alt="Mars"
+            role="button"
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setMarsOpen(true)
+              try { window.history.pushState({}, '', '/mars') } catch (e) {}
+            }}
+          />
         </div>
       )}
-
-      {moonOpen && (
-        <div className="moon-overlay" role="dialog" aria-modal="true">
-          <div className="moon-overlay-inner">
-            <button className="moon-overlay-close" onClick={() => { setMoonOpen(false); window.history.back() }}>✕</button>
-            <h1>Moon Research</h1>
-            <p>This is a clean moon page. Add detailed content here.</p>
-          </div>
-        </div>
-      )}
-      {/* Moon overlay handled by component */}
-      <MoonOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} />
-
-      {/* Swipe deck moved into moon overlay */}
-      <div>
-        <img
-          src={moonButton}
-          className="moon"
-          alt="Moon"
-          role="button"
-          onClick={() => {
-            setMoonOpen(true)
-            try { window.history.pushState({}, '', '/moon') } catch (e) {}
-          }}
-        />
-        <img
-          src={marsButton}
-          className="mars"
-          alt="Mars"
-          role="button"
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            setMarsOpen(true)
-            try { window.history.pushState({}, '', '/mars') } catch (e) {}
-          }}
-        />
-      </div>
 
       {/* Planet overlays for Moon and Mars */}
       <PlanetOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} name="Moon"/>
@@ -256,8 +236,8 @@ function App() {
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />
       </div>
+      <ArticleReader/>
     </div>
-    <ArticleReader/>
   )
 }
 
