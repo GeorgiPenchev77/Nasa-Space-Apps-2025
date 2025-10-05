@@ -13,24 +13,27 @@ import useTextCapture from "./hooks/useTextCapture";
 import { sendHighlightToBackend } from "./utils/api";
 
 function App() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [searchResults, setSearchResults] = useState(null);
+  const [aiResponse, setAiResponse] = useState("");
+
   useEffect(() => {
-  function handleMouseUp() {
-    const selectedText = window.getSelection().toString().trim();
-    if (selectedText) {
-      console.log("Highlighted text:", selectedText);
-      sendHighlightToBackend(selectedText);
+    async function handleMouseUp() {
+      const selectedText = window.getSelection().toString().trim();
+      if (selectedText) {
+        console.log("Highlighted text:", selectedText);
+        const response = await sendHighlightToBackend(selectedText);
+        setAiResponse(response);
+      }
     }
-  }
 
-  document.addEventListener("mouseup", handleMouseUp);
-  return () => document.removeEventListener("mouseup", handleMouseUp);
-}, []);
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => document.removeEventListener("mouseup", handleMouseUp);
+  }, []);
 
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showFilterPopup, setShowFilterPopup] = useState(false)
-  const [selectedTags, setSelectedTags] = useState([])
-  const [searchResults, setSearchResults] = useState(null)
 
     // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
   const allArticles = [
@@ -252,6 +255,27 @@ function App() {
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />
       </div>
+      {/*here is where u change the design*/} 
+          {aiResponse && (
+      <div 
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          backgroundColor: "white",
+          color: "black",
+          padding: "12px 16px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+          maxWidth: "300px",
+          zIndex: 9999,
+        }}
+      >
+        <strong>Explanation:</strong>
+        <p style={{ marginTop: "8px", fontSize: "0.9rem" }}>{aiResponse}</p>
+      </div>
+    )}
+
       <ArticleReader/>
     </div>
   )

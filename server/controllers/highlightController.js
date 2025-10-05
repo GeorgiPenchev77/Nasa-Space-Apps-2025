@@ -9,7 +9,12 @@ export async function handleHighlight(req, res) {
 
     // Reuse your existing Gemini setup
     const model = getGeminiModel("gemini-2.5-flash");
-    const prompt = `Give a short, helpful explanation or related insight about: "${text}"`;
+    const prompt = `
+Explain the following text in simple, beginner-friendly terms, using short sentences.
+Keep it under 3 sentences.
+Text: "${text}"
+`;
+
     const result = await model.generateContent(prompt);
     const response = result.response.text();
 
