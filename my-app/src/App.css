@@ -13,9 +13,7 @@ html, body, #root {
 .space-background {
   position: relative;
   min-height: 100vh;
-  min-height: 100vh;
   width: 100%;
-  background: url('./assets/background.jpg') no-repeat center center fixed;
   background: url('./assets/background.jpg') no-repeat center center fixed;
   background-size: cover;
   background-position: center center;
@@ -353,7 +351,10 @@ html, body, #root {
 .moon-overlay {
   position: fixed;
   inset: 0;
-  background: #0b0b0c;
+  background: url('./assets/background.jpg') no-repeat center center;
+  background-size: contain;       /* Makes the whole image fit without cropping */
+  background-position: center;    /* Centers the image */
+  background-attachment: fixed;   /* Optional: keeps background fixed when scrolling */
   color: #fff;
   display: flex;
   align-items: center;
@@ -363,25 +364,28 @@ html, body, #root {
 .moon-overlay-inner {
   width: 90%;
   max-width: 900px;
-  background: #000;
+  background: 0 4px 20px rgba(0, 0, 0, 0.3);
   padding: 2.5rem;
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   position: relative;
+
+  border: 2px solid #61dafb; /* laser color */
+  box-shadow: 0 0 10px #61dafb, 0 0 20px #61dafb, 0 0 40px #61dafb, 0 0 60px #61dafb;
 }
 .moon-overlay-inner { display:flex; flex-direction:column; align-items:center; gap:1rem }
 .moon-overlay-close { position: absolute; top: 18px; right: 18px; border: none; background: transparent; color: #fff; font-size: 1.4rem; cursor: pointer }
 
 /* Swipe deck styles */
 .swipe-deck { display:flex; flex-direction:column; align-items:center; gap:1rem }
-.deck-controls { width: 360px; display:flex; justify-content:space-between; align-items:center }
+.deck-controls { width: 500px; display:flex; justify-content:space-between; align-items:center }
 .arrow { background: #fff; border: 1px solid #ddd; width: 40px; height: 40px; border-radius: 20px; font-size: 1.5rem; cursor: pointer; display:flex; align-items:center; justify-content:center }
 .arrow:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.08) }
 .arrow.left { color: #c0392b }
 .arrow.right { color: #27ae60 }
 .cards { position: relative; width: 360px; height: 420px }
-.card-wrapper { position: absolute; left: 0; right: 0; margin: 0 auto; width: 100%; height: 380px }
+.card-wrapper { position: absolute; left: 0; right: 0; margin: 0 auto; width: 100%; height: 540px }
 .research-card { background: linear-gradient(180deg,#fff,#f7f9ff); border-radius:12px; padding:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.12); display:flex; flex-direction:column; justify-content:space-between; cursor:grab; user-select:none; touch-action:none }
 .research-card:active { cursor:grabbing }
 .card-top { display:flex; justify-content:space-between; align-items:center }
