@@ -16,7 +16,6 @@ function App() {
   const [showFilterPopup, setShowFilterPopup] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [searchResults, setSearchResults] = useState(null)
-  const [moonOpen, setMoonOpen] = useState(false)
 
     // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
   const allArticles = [
@@ -256,8 +255,8 @@ function App() {
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />
       </div>
+      <ArticleReader/>
     </div>
-    <ArticleReader/>
   )
 }
 
