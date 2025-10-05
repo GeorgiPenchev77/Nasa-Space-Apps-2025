@@ -65,6 +65,8 @@ function App() {
   // Moon and Mars overlay state
   const [moonOpen, setMoonOpen] = useState(false)
   const [marsOpen, setMarsOpen] = useState(false)
+  // Chat overlay state (opened when URL is /chatroom)
+  const [chatOpen, setChatOpen] = useState(false)
 
   useEffect(() => {
     if (window.location.pathname === '/moon') setMoonOpen(true)
@@ -74,6 +76,16 @@ function App() {
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  useEffect(() => {
+    if (window.location.pathname === '/chatroom') setChatOpen(true)
+    const onPopChat = () => {
+      if (window.location.pathname === '/chatroom') setChatOpen(true)
+      else setChatOpen(false)
+    }
+    window.addEventListener('popstate', onPopChat)
+    return () => window.removeEventListener('popstate', onPopChat)
   }, [])
 
   const removeTag = (tag) => {
@@ -237,6 +249,18 @@ function App() {
         <AstronautPopup />
       </div>
       <ArticleReader/>
+      {/* Chat overlay - opens when path is /chatroom or chatOpen is true */}
+      {chatOpen && (
+        <div className="chat-overlay" style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <div style={{width: '90%', maxWidth: '800px', background: 'white', color: 'black', borderRadius: '12px', padding: '1rem', maxHeight: '90vh', overflow: 'auto'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+              <h3 style={{margin: 0}}>Chatroom</h3>
+              <button onClick={() => { try { window.history.pushState({}, '', '/') } catch(e){}; setChatOpen(false); }} style={{padding: '6px 10px'}}>Close</button>
+            </div>
+            <Chatbot />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
