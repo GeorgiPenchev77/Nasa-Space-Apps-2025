@@ -34,7 +34,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 ## How to Run the Project
 ### 1. Clone the repository
 ```sh
-  git clone ...
+  git clone (your ssh key)
 ```
 ### 2. Install dependencies
 
