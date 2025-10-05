@@ -31,6 +31,33 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 - Users can chat directly with the AI assistant  
 - The AI summarizes papers, answers questions, and suggests related studies  
 
+## How to Run the Project
+
+### 1. Install dependencies
+
+```sh
+  cd ./server
+  npm install
+  cd ../my-app
+  npm install
+```
+
+### 2. Start the website
+In a new terminal run
+```sh
+  cd my-app
+  npm run dev
+```
+
+### 2. Start the server
+In a new terminal run
+```sh
+  cd server
+  node app.js
+```
+
+
+Open your browser and go to the local address shown in the first terminal (usually http://localhost:5173).
 
 ## Supporting Articles
 
@@ -65,6 +92,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 * Rene Ignacio Gonzalez Perez
 * Omar Moussa
 * Leo Blomdahl
+* Georgi Hristov Penchev
 
 ## License 
 The project is free to use and licensed under the [MIT License](Nasa-Space-Apps-2025/License)
