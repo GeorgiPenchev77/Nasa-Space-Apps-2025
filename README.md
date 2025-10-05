@@ -40,7 +40,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 
 **Multimodal Learning**: https://www.mdpi.com/2227-7102/9/3/210
 
-**Personalized Learning**: https://scholarworks.uttyler.edu/cgi/viewcontent.cgi?params=/context/education_grad/article/1007/&path_info=reviewed.Jorly_Thomas___Final_Dissertation_with_completed_signage_page_and_signature___UT_Tyler__EVALUATION_OF_PERSONALIZED_LEARNING_7_21_23__1_.pdf
+**Personalized Learning**: https://scholarworks.uttyler.edu/cgi/viewcontent.cgi?params=/context/education_grad/article/1007&path_info=reviewed.Jorly_Thomas___Final_Dissertation_with_completed_signage_page_and_signature___UT_Tyler__EVALUATION_OF_PERSONALIZED_LEARNING_7_21_23__1_.pdf
 
 ---
 
