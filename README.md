@@ -32,6 +32,17 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 - The AI summarizes papers, answers questions, and suggests related studies  
 
 ---
+## Supporting Articles
+
+**Active learning**: https://pubmed.ncbi.nlm.nih.gov/24821756/
+
+**Cognitive Load Reduction**: https://www.sciencedirect.com/science/article/abs/pii/0959475294900035
+
+**Multimodal Learning**: https://www.mdpi.com/2227-7102/9/3/210
+
+**Personalized Learning**: https://scholarworks.uttyler.edu/cgi/viewcontent.cgi?params=/context/education_grad/article/1007/&path_info=reviewed.Jorly_Thomas___Final_Dissertation_with_completed_signage_page_and_signature___UT_Tyler__EVALUATION_OF_PERSONALIZED_LEARNING_7_21_23__1_.pdf
+
+---
 
 ## 💡 Impact
 - Makes NASA’s bioscience data **accessible** and **interactive**  
