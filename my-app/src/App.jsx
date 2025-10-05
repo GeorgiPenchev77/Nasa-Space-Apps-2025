@@ -1,15 +1,22 @@
 import React from 'react';
 import { Router, Route } from './utils/router';
+import { ChatProvider } from './utils/chatContext';
+import ChatbotPopup from './components/ChatbotPopup';
 import HomePage from './pages/Home';
-import ChatPage from './pages/Chatbot';
+import ArticleViewerPage from './pages/ArticleViewer';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <Route path="/" component={HomePage} />
-      <Route path="/chatbot" component={ChatPage} />
-    </Router>
+    <ChatProvider>
+      <Router>
+        <Route path="/" component={HomePage} />
+        <Route path="/articles/:tag" component={ArticleViewerPage} />
+        
+        {/* Global Chatbot Popup - appears on all pages */}
+        <ChatbotPopup />
+      </Router>
+    </ChatProvider>
   );
 }
 

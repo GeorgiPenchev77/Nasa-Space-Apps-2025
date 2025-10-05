@@ -1,111 +1,103 @@
-/*
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import LinkTree from "../components/LinkTree";
-import data from "../../../resources/cache/tags.json"; // your raw JSON with alternating [title, url, title, url...]
+import { useState, useEffect } from "react";
+import { useRouter } from "../utils/router";
+import apiClient from "../utils/apiClient";
+import FloatingChatButton from "../components/ChatbotButton";
+import { ArrowLeft } from "lucide-react";
+import ArticleSidebar from "../components/ArticleSidebar";
+import ArticleWindow from "../components/ArticleWindow";
 
-// helper to normalize raw arrays into {title, url} objects
-const normalizeArticles = (arr) => {
-  const result = [];
-  for (let i = 0; i < arr.length; i += 2) {
-    result.push({ title: arr[i], url: arr[i + 1] });
-  }
-  return result;
-};
+export default function ArticleViewerPage() {
+  const { currentPath, goBack } = useRouter();
+  const [articles, setArticles] = useState([]);
+  const [tagName, setTagName] = useState("");
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export default function ArticleViewer() {
-  const { tag } = "Mice";
-  const [articleText, setArticleText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [explanation, setExplanation] = useState(null);
+  useEffect(() => {
+    loadArticles();
+  }, [currentPath]);
 
-  // get raw data for this tag
-  const rawArticles = data[tag] || [];
-  // normalize if needed
-  const articles =
-    rawArticles.length && typeof rawArticles[0] === "string"
-      ? normalizeArticles(rawArticles)
-      : rawArticles;
-
-  const loadArticle = async (link) => {
+  const loadArticles = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setExplanation(null);
-      setArticleText("");
+      const pathParts = currentPath.split("/");
+      const encodedTag = pathParts[pathParts.length - 1];
+      const tag = decodeURIComponent(encodedTag);
+      setTagName(tag);
 
-      const match = link.match(/PMC\d+/);
-      if (!match) throw new Error("Not a valid PMC link.");
-      const pmcId = match[0];
+      const tagsData = await apiClient.articles.getTags();
 
-      const xmlUrl = `http://localhost:3000/api/pubs/get-xml?pmcId=${pmcId}`;
-      const res = await fetch(xmlUrl);
-      const xmlText = await res.text();
-
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-      const passages = Array.from(xmlDoc.getElementsByTagName("passage"));
-      const textContent = passages
-        .map((p) => p.getElementsByTagName("text")[0]?.textContent || "")
-        .join("\n\n");
-
-      setArticleText(textContent);
+      if (tagsData[tag]) {
+        const tagArray = tagsData[tag];
+        const formatted = [];
+        for (let i = 0; i < tagArray.length; i += 2) {
+          formatted.push({
+            id: i / 2,
+            title: tagArray[i],
+            url: tagArray[i + 1],
+          });
+        }
+        setArticles(formatted);
+        setSelectedArticle(formatted[0] || null);
+      } else {
+        setArticles([]);
+        setSelectedArticle(null);
+      }
     } catch (err) {
-      console.error(err);
-      alert("Could not load article text.");
+      console.error("Failed to load articles:", err);
+      setError("Failed to load articles. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDoubleClick = async () => {
-    const selection = window.getSelection().toString().trim();
-    if (!selection) return;
-
-    try {
-      setExplanation("Loading explanation...");
-      const res = await fetch("/api/explain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: selection }),
-      });
-      const data = await res.json();
-      setExplanation(data.explanation || "No explanation available.");
-    } catch (err) {
-      console.error(err);
-      setExplanation("Error getting explanation.");
-    }
-  };
-
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Publications for {tag}</h1>
+    <div className="space-background min-h-screen pb-12 text-white">
+      <div className="max-w-7xl mx-auto p-6">
+        <button
+          onClick={goBack}
+          className="flex items-center gap-2 px-4 py-2 mb-6 rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition-all text-white"
+        >
+          <ArrowLeft size={20} />
+          Back to Tags
+        </button>
 
-      <LinkTree articles={articles} onClick={loadArticle} />
+        <h1 className="text-4xl font-extrabold mb-2 bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent">
+          {tagName}
+        </h1>
 
-      {loading && <p className="mt-4 text-blue-600">Loading article...</p>}
+        <p className="text-gray-300 mb-8">
+          {loading
+            ? "Loading..."
+            : `${articles.length} ${articles.length === 1 ? "article" : "articles"} found`}
+        </p>
 
-      {articleText && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Article</h2>
-          <div
-            className="bg-white border rounded-xl shadow-sm p-6 whitespace-pre-wrap leading-relaxed text-gray-800 prose max-w-none"
-            onDoubleClick={handleDoubleClick}
-          >
-            {articleText}
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/40 rounded-xl p-4 text-center mb-6">
+            ⚠️ {error}
+            <button
+              onClick={loadArticles}
+              className="block mx-auto mt-3 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+            >
+              Retry
+            </button>
           </div>
-          <p className="mt-2 text-sm text-gray-400 italic">
-            (Double-click any text to get an AI explanation)
-          </p>
-        </div>
-      )}
+        )}
 
-      {explanation && (
-        <div className="mt-6 p-5 border rounded-xl bg-blue-50 border-blue-200 shadow-sm">
-          <strong className="block mb-2 text-blue-700">Explanation:</strong>
-          <p className="text-gray-700">{explanation}</p>
-        </div>
-      )}
+        {!loading && !error && (
+          <div className="flex flex-col md:flex-row gap-6">
+            <ArticleSidebar
+              articles={articles}
+              selectedId={selectedArticle?.id}
+              onSelect={(id) => setSelectedArticle(articles.find((a) => a.id === id))}
+            />
+            <ArticleWindow article={selectedArticle} />
+          </div>
+        )}
+      </div>
+      <FloatingChatButton />
     </div>
   );
 }
-*/

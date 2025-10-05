@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from '../utils/router';
 import apiClient from '../utils/apiClient';
+import FloatingChatButton from '../components/ChatbotButton';
 import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function HomePage() {
@@ -42,7 +43,6 @@ export default function HomePage() {
       urls
     }));
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       tagArray = tagArray.filter(tag => 
@@ -50,9 +50,7 @@ export default function HomePage() {
       );
     }
 
-    // Sort by count (most populated first)
     tagArray.sort((a, b) => b.count - a.count);
-
     setFilteredTags(tagArray);
   };
 
@@ -62,11 +60,6 @@ export default function HomePage() {
 
   const handleShowMore = () => {
     setDisplayCount(prev => prev + 20);
-  };
-
-  const handleShowLess = () => {
-    setDisplayCount(20);
-    setShowAll(false);
   };
 
   const toggleShowAll = () => {
@@ -84,7 +77,6 @@ export default function HomePage() {
 
   return (
     <div className="space-background">
-      {/* Header */}
       <div style={{ textAlign: 'center', paddingTop: '3rem' }}>
         <h1 className="gradient-text">Knowledge Station</h1>
         <h2 className="sub-text">
@@ -92,7 +84,6 @@ export default function HomePage() {
         </h2>
       </div>
 
-      {/* Search Bar */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
@@ -115,7 +106,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Stats */}
       {!loading && (
         <div style={{
           textAlign: 'center',
@@ -132,7 +122,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Loading State */}
       {loading && (
         <div style={{ 
           textAlign: 'center', 
@@ -144,7 +133,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Error State */}
       {error && (
         <div style={{
           maxWidth: '600px',
@@ -175,7 +163,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Tags Grid */}
       {!loading && !error && (
         <>
           {filteredTags.length > 0 ? (
@@ -246,7 +233,6 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Show More/Less Controls */}
               {filteredTags.length > 20 && (
                 <div style={{
                   display: 'flex',
@@ -336,31 +322,7 @@ export default function HomePage() {
         </>
       )}
 
-      {/* Floating Chatbot Button */}
-      <div
-        onClick={() => navigate('/chatbot')}
-        style={{
-          position: 'fixed',
-          bottom: '40px',
-          right: '40px',
-          width: '70px',
-          height: '70px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          fontSize: '35px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-          zIndex: 999,
-          transition: 'transform 0.3s ease'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-      >
-        🤖
-      </div>
+      <FloatingChatButton />
     </div>
   );
 }
