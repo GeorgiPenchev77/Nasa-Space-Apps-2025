@@ -32,8 +32,11 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 - The AI summarizes papers, answers questions, and suggests related studies  
 
 ## How to Run the Project
-
-### 1. Install dependencies
+### 1. Clone the repository
+```sh
+  git clone ...
+```
+### 2. Install dependencies
 
 ```sh
   cd ./server
@@ -42,14 +45,14 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
   npm install
 ```
 
-### 2. Start the website
+### 3. Start the website
 In a new terminal run
 ```sh
   cd my-app
   npm run dev
 ```
 
-### 2. Start the server
+### 4. Start the server
 In a new terminal run
 ```sh
   cd server
