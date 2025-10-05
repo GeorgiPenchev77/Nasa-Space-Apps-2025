@@ -8,13 +8,14 @@ import researchData from './data/research.json'
 import PlanetOverlay from './components/PlanetOverlay'
 import Chatbot from './Chatbot' 
 import ArticleReader from './ArticleViewer'
+import tags from '../../server/cache/tags.json'
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilterPopup, setShowFilterPopup] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [searchResults, setSearchResults] = useState(null)
-
+  
   // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
   const allArticles = [
     { id: 1, title: "The Moon's Formation", description: "How Earth's satellite came to be", tags: ['moon'] },
@@ -83,7 +84,11 @@ function App() {
     setSearchResults(null)
     setSearchQuery('')
     setSelectedTags([])
+    setSearchResults(null)
+    setSearchQuery('')
+    setSelectedTags([])
   }
+
 
   return (
     <div className="space-background">
@@ -160,11 +165,7 @@ function App() {
       {searchResults === null && (
         <div className="tag-grid-container">
           <div className="tag-grid">
-            {['Astronomy', 'Physics', 'Biology', 'Chemistry', 'Geology', 'Climate', 'Technology', 'Exploration',
-              'Robotics', 'Engineering', 'Mathematics', 'History', 'Research', 'Discovery', 'Innovation', 'Science',
-              'Space', 'Planets', 'Stars', 'Galaxies', 'Solar System', 'Universe', 'Cosmology', 'Astrophysics',
-              'Satellites', 'Missions', 'NASA', 'ESA', 'SpaceX', 'Rovers', 'Telescopes', 'Observations',
-              'Data', 'Analysis', 'Experiments', 'Theory', 'Practice', 'Studies', 'Future', 'Past'].map(tag => (
+            {Object.keys(tags).map(tag => (
               <div key={tag} className="tag-chip-grid">
                 <span>{tag}</span>
               </div>

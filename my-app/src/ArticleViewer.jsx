@@ -19,7 +19,7 @@ export default function ArticleReader(){
             if(!match) throw new Error("Not a valid PMC link.");
             const pmcId = match[0];
 
-            const xmlUrl = `http://localhost:3000/api/get-pmc-xml?pmcId=${pmcId}`;
+            const xmlUrl = `http://localhost:3000/api/pubs/get-xml?pmcId=${pmcId}`;
             const res = await fetch(xmlUrl);
             const xmlText = await res.text();
 
