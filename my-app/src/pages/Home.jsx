@@ -39,7 +39,7 @@ export default function HomePage() {
   const filterAndSortTags = () => {
     let tagArray = Object.entries(tags).map(([name, urls]) => ({
       name,
-      count: urls.length,
+      count: (urls.length)/2,
       urls
     }));
 
