@@ -38,7 +38,7 @@ Build a website that uses **AI** to summarize and organize NASA’s bioscience s
 ```sh
   cd ./server
   npm install
-  cd ../my-app
+  cd ./my-app
   npm install
 ```
 
