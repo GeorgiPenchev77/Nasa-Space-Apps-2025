@@ -45,7 +45,7 @@ export const generateTags = async (req, res) => {
           (like topics, fields, or keywords) that summarize its content.
 
           Title: "${article.title}"
-          Content: """${content.slice(0, 4000)}"""  // limit content size
+          Content: """${content.slice(0, 2000)}"""  // limit content size
           
           Respond ONLY in valid JSON array format. Example:
           ["AI", "Healthcare", "Innovation"]
@@ -85,55 +85,81 @@ export const generateTags = async (req, res) => {
 const cachePath = path.join(process.cwd(), "cache", "tags.json");
 
 export const buildTagCache = async () => {
-  console.log("🔍 Building tag cache based on titles...");
+  console.log("Building tag cache (batch mode)...");
 
-  const results = await searchCSV(""); // get all publications
-  const model = getGeminiModel("gemini-2.5-pro"); // faster, cheaper
+  const results = await searchCSV(""); // load all publications
+  const model = getGeminiModel("gemini-2.5-flash"); // fast & cheap model
   const tagMap = {};
 
-  for (const [index, entry] of results.entries()) {
-    const title = Object.values(entry.row)[0];
-    const url = Object.values(entry.row)[1];
-    if (!title || !url) continue;
+  // Helper: split array into chunks of N
+  const chunkArray = (arr, size) =>
+    arr.reduce((acc, _, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]), []);
 
-    console.log(`📄 (${index + 1}/${results.length}) Tagging: "${title}"`);
+  const allArticles = results
+    .map(r => ({
+      title: Object.values(r.row)[0],
+      url: Object.values(r.row)[1],
+    }))
+    .filter(a => a.title && a.url);
 
+  const BATCH_SIZE = 20; // number of titles per prompt
+  const batches = chunkArray(allArticles, BATCH_SIZE);
+
+  for (const [i, batch] of batches.entries()) {
+    console.log(`Processing batch ${i + 1}/${batches.length} (${batch.length} titles)`);
+
+    const titlesList = batch.map(a => a.title).join("\n");
     const prompt = `
-      Generate 3 to 5 short descriptive tags that categorize the following article title.
-      Keep the tags concise (1–3 words max), relevant, and general enough for grouping.
-      Return ONLY a JSON array, e.g. ["AI", "Healthcare", "Diagnostics"].
+      Generate 2–3 short descriptive tags for each of the following article titles.
+      Return ONLY valid JSON mapping titles to an array of tags.
 
-      Title: "${title}"
+      Example:
+      {
+        "AI in Healthcare": ["AI", "Healthcare"],
+        "Cancer Genomics": ["Cancer", "Genomics"]
+      }
+
+      Titles:
+      ${titlesList}
     `;
 
     try {
       const result = await model.generateContent(prompt);
-      const raw = result.response.text();
+      const text = result.response.text();
 
-      let tags;
+      let tagResults;
       try {
-        tags = JSON.parse(raw);
-      } catch {
-        tags = raw
-          .replace(/[\[\]"]+/g, "")
-          .split(/,|\n/)
-          .map(t => t.trim())
-          .filter(Boolean);
+        tagResults = JSON.parse(text);
+      } catch (err) {
+        console.warn("JSON parse error, attempting to repair response...");
+        const fixed = text
+          .replace(/```json|```/g, "")
+          .trim();
+        tagResults = JSON.parse(fixed);
       }
 
-      for (const tag of tags) {
-        if (!tagMap[tag]) tagMap[tag] = [];
-        tagMap[tag].push(url);
+      // Merge batch results into master tagMap
+      for (const [title, tags] of Object.entries(tagResults)) {
+        const article = batch.find(a => a.title === title);
+        if (!article) continue;
+
+        for (const tag of tags) {
+          if (!tagMap[tag]) tagMap[tag] = [];
+          tagMap[tag].push(article.url);
+        }
       }
+
+      // Optional small delay to stay under RPM limits
+      await new Promise(res => setTimeout(res, 2000));
     } catch (err) {
-      console.error(`❌ Error tagging "${title}":`, err.message);
+      console.error(`Batch ${i + 1} failed:`, err.message);
     }
   }
 
   fs.mkdirSync(path.dirname(cachePath), { recursive: true });
   fs.writeFileSync(cachePath, JSON.stringify(tagMap, null, 2));
+  console.log(`Tag cache built (${Object.keys(tagMap).length} tags total)`);
 
-  console.log(`✅ Tag cache built (${Object.keys(tagMap).length} tags total)`);
   return tagMap;
 };
 

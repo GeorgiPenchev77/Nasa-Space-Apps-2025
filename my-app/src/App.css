@@ -213,8 +213,8 @@ html, body, #root {
 }
 
 .mars {
-  height: 25em;
-  padding: 1.5em;
+  height: 12em;
+  padding: 0em;
   will-change: filter;
   transition: filter 300ms;
 }
@@ -227,10 +227,11 @@ html, body, #root {
 
 
 .moon {
-  height: 15em;
-  padding: 1.5em;
+  height: 10em;
+  padding: 0em;
   will-change: filter;
-  transition: filter 300ms;
+  transition: filter 300ms, transform 160ms ease;
+  cursor: pointer;
 }
 .moon:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
@@ -477,4 +478,59 @@ html, body, #root {
   color: #666;
   font-size: 1.1rem;
   margin: 0;
+}
+
+/* Tag Grid */
+.tag-grid-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 12px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.tag-chip-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(102, 126, 234, 0.8);
+  border-radius: 20px;
+  color: white;
+  font-size: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tag-chip-grid:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 1200px) {
+  .tag-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .tag-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .tag-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

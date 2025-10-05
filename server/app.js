@@ -2,11 +2,16 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
+import { buildTagCache } from "./controllers/articleController.js";
+import cron from "node-cron"
 import geminiRoutes from "./routes/geminiRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import pubRoutes from "./routes/pubRoutes.js";
 import articleRoutes from "./routes/articleRoutes.js";
+import { error } from "console";
+
 
 
 
@@ -41,4 +46,32 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
+
+
+  cron.schedule("0 2 * * *", async () => {
+  
+  console.log("Rebuilding cache of tags");
+  try{
+
+    await buildTagCache();
+    console.log("Success.");
+  }
+  catch (err) {
+    console.error("Error: ", err );
+  }
+  });
+
+  const cachePath = path.join(process.cwd(), "cache", "tags.json"
+);
+
+if(!fs.existsSync(cachePath)){
+  console.log("No cache found - buidling cache");
+  buildTagCache().
+  then (()=> console.log("Success.")).catch(()=> console.log("Error: ", error));
+}
+else{
+  console.log("Cache found, skipping!")
+}
+
 });
+
