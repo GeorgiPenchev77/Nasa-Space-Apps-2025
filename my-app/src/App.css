@@ -52,6 +52,33 @@ html, body, #root {
   padding: 0 20px;
 }
 
+.planets-search-wrapper {
+  display: flex;
+  flex-direction: row; /* <--- makes them sit side by side */
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.planets-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 600px; /* matches search bar width */
+  margin: 0 auto;   /* centers the group horizontally */
+  padding: 1.5rem 0;
+}
+
+.planets-container img {
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.planets-container img:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 1.5em rgba(255, 255, 255, 0.4));
+}
+
 .search-input-wrapper {
   position: relative;
   width: 100%;
@@ -549,7 +576,7 @@ html, body, #root {
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   transition: all 0.3s ease;
   min-width: 140px;
   max-width: 140px;

@@ -16,7 +16,7 @@ function Home() {
   const [moonOpen, setMoonOpen] = useState(false)
   const [marsOpen, setMarsOpen] = useState(false)
 
-  // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
+  // Temporary mock articles
   const allArticles = [
     { id: 1, title: "The Moon's Formation", description: "How Earth's satellite came to be", tags: ['moon'] },
     { id: 2, title: "Lunar Phases Explained", description: "Understanding the moon's cycle", tags: ['moon'] },
@@ -30,20 +30,14 @@ function Home() {
 
   const handleSearch = (e) => {
     e.preventDefault()
-    console.log('Searching for:', searchQuery)
-    console.log('Selected tags:', selectedTags)
-
-    // Filter articles based on search query and selected tags
     let results = allArticles
 
-    // Filter by tags if any selected
     if (selectedTags.length > 0) {
-      results = results.filter(article => 
+      results = results.filter(article =>
         article.tags.some(tag => selectedTags.includes(tag))
       )
     }
 
-    // Filter by search query
     if (searchQuery.trim()) {
       results = results.filter(article =>
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -55,8 +49,8 @@ function Home() {
   }
 
   const toggleTag = (tag) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
+    setSelectedTags(prev =>
+      prev.includes(tag)
         ? prev.filter(t => t !== tag)
         : [...prev, tag]
     )
@@ -65,104 +59,104 @@ function Home() {
   useEffect(() => {
     if (window.location.pathname === '/moon') setMoonOpen(true)
     const onPop = () => {
-      if (window.location.pathname !== '/moon') setMoonOpen(false)
-      else setMoonOpen(true)
+      setMoonOpen(window.location.pathname === '/moon')
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  const removeTag = (tag) => {
-    setSelectedTags(prev => prev.filter(t => t !== tag))
-  }
-
-  const clearSearch = () => {
-    setSearchResults(null)
-    setSearchQuery('')
-    setSelectedTags([])
-  }
-
-  const handleTagClick = (tag) => {
-    // Handle tag click - could add to selectedTags or perform search
-    console.log('Tag clicked:', tag)
-    setSelectedTags(prev => [...prev, tag])
-  }
+  const removeTag = (tag) => setSelectedTags(prev => prev.filter(t => t !== tag))
+  const clearSearch = () => { setSearchResults(null); setSearchQuery(''); setSelectedTags([]) }
+  const handleTagClick = (tag) => setSelectedTags(prev => [...prev, tag])
 
   return (
     <div className="space-background">
       <h1 className="gradient-text">Knowledge Station</h1>
       <h2 className="sub-text">Use our search box, tap a planet for its related articles, or chat with our astronaut!</h2>
 
-      <form onSubmit={handleSearch} className="search-container">
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            placeholder="Search articles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+      {/* 🌙 Moon | Search | Mars */}
+      {searchResults === null && (
+        <div className="planets-search-wrapper">
+          {/* Moon button */}
+          <img
+            src={moonButton}
+            className="moon"
+            alt="Moon"
+            role="button"
+            onClick={() => {
+              setMoonOpen(true)
+              try { window.history.pushState({}, '', '/moon') } catch (e) {}
+            }}
           />
-          <button type="submit" className="search-icon-button">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-          </button>
-        </div>
-        <button 
-          type="button" 
-          className="filter-button"
-          onClick={() => setShowFilterPopup(!showFilterPopup)}
-        >
-          Filter
-        </button>
-        
-        {selectedTags.map(tag => (
-          <div key={tag} className="tag-chip">
-            <span>{tag.charAt(0).toUpperCase() + tag.slice(1)}</span>
+
+          {/* Search form */}
+          <form onSubmit={handleSearch} className="search-container">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              <button type="submit" className="search-icon-button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </button>
+            </div>
+
             <button
               type="button"
-              className="tag-chip-remove"
-              onClick={() => removeTag(tag)}
+              className="filter-button"
+              onClick={() => setShowFilterPopup(!showFilterPopup)}
             >
-              ×
+              Filter
             </button>
-          </div>
-        ))}
-      </form>
 
+            {selectedTags.map(tag => (
+              <div key={tag} className="tag-chip">
+                <span>{tag.charAt(0).toUpperCase() + tag.slice(1)}</span>
+                <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>×</button>
+              </div>
+            ))}
+          </form>
+
+          {/* Mars button */}
+          <img
+            src={marsButton}
+            className="mars"
+            alt="Mars"
+            role="button"
+            onClick={() => {
+              setMarsOpen(true)
+              try { window.history.pushState({}, '', '/mars') } catch (e) {}
+            }}
+          />
+        </div>
+      )}
+
+      {/* Planet overlays */}
+      <PlanetOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} name="Moon" />
+      <PlanetOverlay open={marsOpen} onClose={() => setMarsOpen(false)} items={researchData} name="Mars" />
+
+      {/* Filter popup */}
       {showFilterPopup && (
         <div className="filter-popup">
           <div className="filter-popup-content">
             <h3>Filter by Tags</h3>
             <div className="tag-options">
-              <button
-                className={`tag-option ${selectedTags.includes('moon') ? 'selected' : ''}`}
-                onClick={() => toggleTag('moon')}
-              >
-                Moon
-              </button>
-              <button
-                className={`tag-option ${selectedTags.includes('mars') ? 'selected' : ''}`}
-                onClick={() => toggleTag('mars')}
-              >
-                Mars
-              </button>
+              <button className={`tag-option ${selectedTags.includes('moon') ? 'selected' : ''}`} onClick={() => toggleTag('moon')}>Moon</button>
+              <button className={`tag-option ${selectedTags.includes('mars') ? 'selected' : ''}`} onClick={() => toggleTag('mars')}>Mars</button>
             </div>
-            <button 
-              className="close-filter-button"
-              onClick={() => setShowFilterPopup(false)}
-            >
-              Apply Filters
-            </button>
+            <button className="close-filter-button" onClick={() => setShowFilterPopup(false)}>Apply Filters</button>
           </div>
         </div>
       )}
 
-      {/* Tag Grid Component - only show when not searching */}
-      {searchResults === null && (
-        <TagGrid onTagClick={handleTagClick} />
-      )}
+      {/* Tag Grid */}
+      {searchResults === null && <TagGrid onTagClick={handleTagClick} />}
 
       {/* Search Results */}
       {searchResults !== null && (
@@ -188,48 +182,17 @@ function Home() {
                 </div>
               ))
             ) : (
-              <div className="no-results">
-                <p>No articles found matching your search.</p>
-              </div>
+              <div className="no-results"><p>No articles found matching your search.</p></div>
             )}
           </div>
         </div>
       )}
 
-      {/* Only show planets when not searching */}
-      {searchResults === null && (
-        <div className="planets-container">
-          <img
-            src={moonButton}
-            className="moon"
-            alt="Moon"
-            role="button"
-            onClick={() => {
-              setMoonOpen(true)
-              try { window.history.pushState({}, '', '/moon') } catch (e) {}
-            }}
-          />
-          <img
-            src={marsButton}
-            className="mars"
-            alt="Mars"
-            role="button"
-            onClick={() => {
-              setMarsOpen(true)
-              try { window.history.pushState({}, '', '/mars') } catch (e) {}
-            }}
-          />
-        </div>
-      )}
-
-      {/* Planet overlays for Moon and Mars */}
-      <PlanetOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} name="Moon"/>
-      <PlanetOverlay open={marsOpen} onClose={() => setMarsOpen(false)} items={researchData} name="Mars"/>
-
+      {/* Astronaut + Article Reader */}
       <div className="relative min-h-screen bg-gray-950 text-white">
         <AstronautPopup />
       </div>
-      <ArticleReader/>
+      <ArticleReader />
     </div>
   )
 }
