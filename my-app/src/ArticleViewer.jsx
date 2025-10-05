@@ -6,7 +6,7 @@ export default function ArticleReader(){
     const [articleText    , setArticleText    ] = useState("");
     const [loading,              setLoading] = useState(false);
     const [explanation, setExplanation] = useState(null);
-
+    
 
     const loadArticle = async (link) => {
         try {
