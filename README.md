@@ -1,4 +1,4 @@
-# Knowledge Station 
+# Knowledge Station - NASA Space Apps Challenge 2025
 Project for the Nasa Space Apps Challenge hackathon 2025. For this year, our team chose to work on the "Build a Space Biology Knowledge Engine" challenge.
 
 ## Overview
