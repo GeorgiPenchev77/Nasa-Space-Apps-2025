@@ -6,6 +6,10 @@ import AstronautPopup from "./AstronautPopup";
 import SwipeDeck from './components/SwipeDeck'
 import researchData from './data/research.json'
 import PlanetOverlay from './components/PlanetOverlay'
+import Chatbot from './Chatbot' 
+import ArticleReader from './ArticleViewer'  // 👈 import your chatbot
+
+
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -84,6 +88,7 @@ function App() {
   setSelectedTags([])
   }
 
+  
   return (
     <div className="space-background">
       <h1 className="gradient-text">Knowledge Station</h1>
@@ -252,6 +257,7 @@ function App() {
         <AstronautPopup />
       </div>
     </div>
+    <ArticleReader/>
   )
 }
 
