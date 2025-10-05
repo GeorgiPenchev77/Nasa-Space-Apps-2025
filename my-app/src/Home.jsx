@@ -7,6 +7,7 @@ import researchData from './data/research.json'
 import PlanetOverlay from './components/PlanetOverlay'
 import ArticleReader from './ArticleViewer'
 import TagGrid from './components/TagGrid'
+import Chatbot from './Chatbot'
 
 function Home() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -15,6 +16,7 @@ function Home() {
   const [searchResults, setSearchResults] = useState(null)
   const [moonOpen, setMoonOpen] = useState(false)
   const [marsOpen, setMarsOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
 
   // Temporary mock articles
   const allArticles = [
@@ -58,8 +60,10 @@ function Home() {
 
   useEffect(() => {
     if (window.location.pathname === '/moon') setMoonOpen(true)
+    if (window.location.pathname === '/chatroom') setChatOpen(true)
     const onPop = () => {
       setMoonOpen(window.location.pathname === '/moon')
+      setChatOpen(window.location.pathname === '/chatroom')
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
@@ -193,6 +197,18 @@ function Home() {
         <AstronautPopup />
       </div>
       <ArticleReader />
+      {/* Chat overlay - opens when path is /chatroom or chatOpen is true */}
+      {chatOpen && (
+        <div className="chat-overlay" style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <div style={{width: '90%', maxWidth: '800px', background: 'white', color: 'black', borderRadius: '12px', padding: '1rem', maxHeight: '90vh', overflow: 'auto'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+              <h3 style={{margin: 0}}>Chatroom</h3>
+              <button onClick={() => { try { window.history.pushState({}, '', '/') } catch(e){}; setChatOpen(false); }} style={{padding: '6px 10px'}}>Close</button>
+            </div>
+            <Chatbot />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

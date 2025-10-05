@@ -39,7 +39,10 @@ export default function AstronautPopup() {
             
             {/* Chat button */}
             <button
-              onClick={() => window.location.href = '/chatroom'}
+              onClick={() => {
+                try { window.history.pushState({}, '', '/chatroom') } catch (e) {}
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               style={{
                 marginTop: "15px",
                 padding: "10px 20px",
