@@ -145,7 +145,7 @@ export const buildTagCache = async () => {
 
         for (const tag of tags) {
           if (!tagMap[tag]) tagMap[tag] = [];
-          tagMap[tag].push(article.url);
+          tagMap[tag].push(article.title, article.url);
         }
       }
 

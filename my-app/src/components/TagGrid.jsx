@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import tags from '../../../server/cache/tags.json'
+import tags from '../../../resources/cache/tags.json'
 
 function TagGrid({ onTagClick }) {
   const [currentPage, setCurrentPage] = useState(1)
