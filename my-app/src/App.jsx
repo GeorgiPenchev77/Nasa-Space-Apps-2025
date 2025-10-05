@@ -9,14 +9,17 @@ import PlanetOverlay from './components/PlanetOverlay'
 import Chatbot from './Chatbot' 
 import ArticleReader from './ArticleViewer'
 import tags from '../../server/cache/tags.json'
+import useTextCapture from "./hooks/useTextCapture";
+import { sendHighlightToBackend } from "./utils/api";
 
 function App() {
+  useTextCapture((text) => sendHighlightToBackend(text));
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilterPopup, setShowFilterPopup] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [searchResults, setSearchResults] = useState(null)
-  
-  // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
+
+    // TODO: REPLACE WITH ACTUAL BACKEND ARTICLES
   const allArticles = [
     { id: 1, title: "The Moon's Formation", description: "How Earth's satellite came to be", tags: ['moon'] },
     { id: 2, title: "Lunar Phases Explained", description: "Understanding the moon's cycle", tags: ['moon'] },

@@ -10,6 +10,7 @@ import geminiRoutes from "./routes/geminiRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import pubRoutes from "./routes/pubRoutes.js";
 import articleRoutes from "./routes/articleRoutes.js";
+import highlightRoutes from "./routes/highlight.js";
 import { error } from "console";
 
 
@@ -31,6 +32,7 @@ app.use("/api/articles", articleRoutes);
 app.use("/api/gemini", geminiRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/pubs", pubRoutes);
+app.use("/api/highlight", highlightRoutes);
 
 //
 if (process.env.NODE_ENV === "production") {
@@ -50,28 +52,28 @@ app.listen(PORT, () => {
 
   cron.schedule("0 2 * * *", async () => {
   
-  console.log("Rebuilding cache of tags");
+    console.log("Rebuilding cache of tags");
   try{
 
-    await buildTagCache();
-    console.log("Success.");
+      await buildTagCache();
+      console.log("Success.");
   }
   catch (err) {
     console.error("Error: ", err );
-  }
+    }
   });
 
   const cachePath = path.join(process.cwd(), "cache", "tags.json"
 );
 
-if(!fs.existsSync(cachePath)){
-  console.log("No cache found - buidling cache");
-  buildTagCache().
-  then (()=> console.log("Success.")).catch(()=> console.log("Error: ", error));
-}
-else{
-  console.log("Cache found, skipping!")
-}
+  if(!fs.existsSync(cachePath)) {
+    console.log("No cache found - building cache");
+    buildTagCache().
+      then (()=> console.log("Success.")).catch((err) => console.log("Error:", err));
+  }
+  else{
+    console.log("Cache found, skipping!")
+  }
 
 });
 
