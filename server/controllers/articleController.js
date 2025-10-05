@@ -82,7 +82,7 @@ export const generateTags = async (req, res) => {
   }
 };
 
-const cachePath = path.join(process.cwd(), "../../resources/cache", "tags.json");
+const cachePath = path.join(process.cwd(), "cache", "tags.json");
 
 export const buildTagCache = async () => {
   console.log("Building tag cache (batch mode)...");

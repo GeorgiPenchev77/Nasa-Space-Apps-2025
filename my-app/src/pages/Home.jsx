@@ -1,213 +1,366 @@
-import { useState, useEffect } from 'react'
-import moonButton from './assets/moon.png'
-import marsButton from './assets/mars.png'
-import './App.css'
-import AstronautPopup from "./AstronautPopup"
-import researchData from './data/research.json'
-import PlanetOverlay from '../components/PlanetOverlay'
-import ArticleReader from './ArticleViewer'
-import TagGrid from '../components/TagGrid'
-import Chatbot from './Chatbot'
+import { useState, useEffect } from 'react';
+import { useNavigate } from '../utils/router';
+import apiClient from '../utils/apiClient';
+import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 
-function Home() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showFilterPopup, setShowFilterPopup] = useState(false)
-  const [selectedTags, setSelectedTags] = useState([])
-  const [searchResults, setSearchResults] = useState(null)
-  const [moonOpen, setMoonOpen] = useState(false)
-  const [marsOpen, setMarsOpen] = useState(false)
-  const [chatOpen, setChatOpen] = useState(false)
-
-  // Temporary mock articles
-  const allArticles = [
-    { id: 1, title: "The Moon's Formation", description: "How Earth's satellite came to be", tags: ['moon'] },
-    { id: 2, title: "Lunar Phases Explained", description: "Understanding the moon's cycle", tags: ['moon'] },
-    { id: 3, title: "Apollo Missions", description: "Humanity's journey to the moon", tags: ['moon'] },
-    { id: 4, title: "Moon Base Alpha", description: "Future of lunar colonization", tags: ['moon'] },
-    { id: 5, title: "Mars Rover Discoveries", description: "Latest findings from Perseverance", tags: ['mars'] },
-    { id: 6, title: "Water on Mars", description: "Evidence of ancient oceans", tags: ['mars'] },
-    { id: 7, title: "Terraforming Mars", description: "Making Mars habitable", tags: ['mars'] },
-    { id: 8, title: "Journey to Mars", description: "Planning human missions", tags: ['mars'] }
-  ]
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    let results = allArticles
-
-    if (selectedTags.length > 0) {
-      results = results.filter(article =>
-        article.tags.some(tag => selectedTags.includes(tag))
-      )
-    }
-
-    if (searchQuery.trim()) {
-      results = results.filter(article =>
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.description.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    setSearchResults(results)
-  }
-
-  const toggleTag = (tag) => {
-    setSelectedTags(prev =>
-      prev.includes(tag)
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    )
-  }
+export default function HomePage() {
+  const navigate = useNavigate();
+  const [tags, setTags] = useState({});
+  const [filteredTags, setFilteredTags] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [displayCount, setDisplayCount] = useState(20);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
-    if (window.location.pathname === '/moon') setMoonOpen(true)
-    if (window.location.pathname === '/chatroom') setChatOpen(true)
-    const onPop = () => {
-      setMoonOpen(window.location.pathname === '/moon')
-      setChatOpen(window.location.pathname === '/chatroom')
-    }
-    window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
-  }, [])
+    loadTags();
+  }, []);
 
-  const removeTag = (tag) => setSelectedTags(prev => prev.filter(t => t !== tag))
-  const clearSearch = () => { setSearchResults(null); setSearchQuery(''); setSelectedTags([]) }
-  const handleTagClick = (tag) => setSelectedTags(prev => [...prev, tag])
+  useEffect(() => {
+    filterAndSortTags();
+  }, [tags, searchQuery]);
+
+  const loadTags = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const tagsData = await apiClient.articles.getTags();
+      setTags(tagsData);
+    } catch (err) {
+      console.error('Failed to load tags:', err);
+      setError('Failed to load tags. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterAndSortTags = () => {
+    let tagArray = Object.entries(tags).map(([name, urls]) => ({
+      name,
+      count: urls.length,
+      urls
+    }));
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      tagArray = tagArray.filter(tag => 
+        tag.name.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort by count (most populated first)
+    tagArray.sort((a, b) => b.count - a.count);
+
+    setFilteredTags(tagArray);
+  };
+
+  const handleTagClick = (tag) => {
+    navigate(`/articles/${encodeURIComponent(tag.name)}`);
+  };
+
+  const handleShowMore = () => {
+    setDisplayCount(prev => prev + 20);
+  };
+
+  const handleShowLess = () => {
+    setDisplayCount(20);
+    setShowAll(false);
+  };
+
+  const toggleShowAll = () => {
+    if (showAll) {
+      setDisplayCount(20);
+      setShowAll(false);
+    } else {
+      setDisplayCount(filteredTags.length);
+      setShowAll(true);
+    }
+  };
+
+  const displayedTags = filteredTags.slice(0, displayCount);
+  const hasMore = filteredTags.length > displayCount;
 
   return (
     <div className="space-background">
-      <h1 className="gradient-text">Knowledge Station</h1>
-      <h2 className="sub-text">Use our search box, tap a planet for its related articles, or chat with our astronaut!</h2>
+      {/* Header */}
+      <div style={{ textAlign: 'center', paddingTop: '3rem' }}>
+        <h1 className="gradient-text">Knowledge Station</h1>
+        <h2 className="sub-text">
+          Explore research articles organized by topics. Click any tag to dive into related articles.
+        </h2>
+      </div>
 
-      {/* 🌙 Moon | Search | Mars */}
-      {searchResults === null && (
-        <div className="planets-search-wrapper">
-          {/* Moon button */}
-          <img
-            src={moonButton}
-            className="moon"
-            alt="Moon"
-            role="button"
-            onClick={() => {
-              setMoonOpen(true)
-              try { window.history.pushState({}, '', '/moon') } catch (e) {}
-            }}
+      {/* Search Bar */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        padding: '2rem 20px 1rem',
+        maxWidth: '800px',
+        margin: '0 auto'
+      }}>
+        <div className="search-input-wrapper">
+          <input
+            type="text"
+            placeholder="Search tags..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+            style={{ width: '100%' }}
           />
+          <button type="button" className="search-icon-button">
+            <Search size={20} />
+          </button>
+        </div>
+      </div>
 
-          {/* Search form */}
-          <form onSubmit={handleSearch} className="search-container">
-            <div className="search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Search articles..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-              <button type="submit" className="search-icon-button">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
+      {/* Stats */}
+      {!loading && (
+        <div style={{
+          textAlign: 'center',
+          color: 'white',
+          fontSize: '1rem',
+          marginBottom: '1.5rem',
+          opacity: 0.9
+        }}>
+          {searchQuery ? (
+            <span>Found {filteredTags.length} tags matching "{searchQuery}"</span>
+          ) : (
+            <span>Showing {displayedTags.length} of {filteredTags.length} tags</span>
+          )}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div style={{ 
+          textAlign: 'center', 
+          color: 'white', 
+          padding: '3rem',
+          fontSize: '1.2rem'
+        }}>
+          Loading tags...
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div style={{
+          maxWidth: '600px',
+          margin: '2rem auto',
+          padding: '1.5rem',
+          background: 'rgba(220, 53, 69, 0.2)',
+          border: '2px solid rgba(220, 53, 69, 0.5)',
+          borderRadius: '15px',
+          color: 'white',
+          textAlign: 'center'
+        }}>
+          <p style={{ margin: 0, fontSize: '1.1rem' }}>⚠️ {error}</p>
+          <button
+            onClick={loadTags}
+            style={{
+              marginTop: '1rem',
+              padding: '10px 20px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '1rem'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Tags Grid */}
+      {!loading && !error && (
+        <>
+          {filteredTags.length > 0 ? (
+            <div style={{
+              maxWidth: '1400px',
+              margin: '0 auto',
+              padding: '0 20px 3rem'
+            }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                gap: '20px',
+                marginBottom: '2rem'
+              }}>
+                {displayedTags.map(tag => (
+                  <div
+                    key={tag.name}
+                    onClick={() => handleTagClick(tag)}
+                    className="tag-card"
+                    style={{
+                      background: 'rgba(60, 74, 135, 0.8)',
+                      border: '2px solid rgba(37, 45, 83, 0.8)',
+                      borderRadius: '15px',
+                      padding: '20px',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(102, 126, 234, 0.8)';
+                      e.currentTarget.style.transform = 'translateY(-5px)';
+                      e.currentTarget.style.boxShadow = '0 8px 20px rgba(102, 126, 234, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(60, 74, 135, 0.8)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    <h3 style={{
+                      margin: 0,
+                      color: 'white',
+                      fontSize: '1.2rem',
+                      fontWeight: '600',
+                      wordBreak: 'break-word'
+                    }}>
+                      {tag.name}
+                    </h3>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      fontSize: '0.9rem'
+                    }}>
+                      <span style={{
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        fontWeight: '500'
+                      }}>
+                        {tag.count} {tag.count === 1 ? 'article' : 'articles'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Show More/Less Controls */}
+              {filteredTags.length > 20 && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '15px',
+                  paddingTop: '1rem'
+                }}>
+                  {!showAll && hasMore && (
+                    <button
+                      onClick={handleShowMore}
+                      style={{
+                        padding: '12px 30px',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '25px',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'transform 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                    >
+                      Show More <ChevronDown size={20} />
+                    </button>
+                  )}
+                  
+                  <button
+                    onClick={toggleShowAll}
+                    style={{
+                      padding: '12px 30px',
+                      background: showAll 
+                        ? 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)'
+                        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '25px',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    {showAll ? (
+                      <>Show Less <ChevronUp size={20} /></>
+                    ) : (
+                      <>Show All <ChevronDown size={20} /></>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{
+              textAlign: 'center',
+              padding: '3rem',
+              color: 'white'
+            }}>
+              <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
+                No tags found matching "{searchQuery}"
+              </p>
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  padding: '10px 20px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+              >
+                Clear Search
               </button>
             </div>
-
-            <button
-              type="button"
-              className="filter-button"
-              onClick={() => setShowFilterPopup(!showFilterPopup)}
-            >
-              Filter
-            </button>
-
-            {selectedTags.map(tag => (
-              <div key={tag} className="tag-chip">
-                <span>{tag.charAt(0).toUpperCase() + tag.slice(1)}</span>
-                <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>×</button>
-              </div>
-            ))}
-          </form>
-
-          {/* Mars button */}
-          <img
-            src={marsButton}
-            className="mars"
-            alt="Mars"
-            role="button"
-            onClick={() => {
-              setMarsOpen(true)
-              try { window.history.pushState({}, '', '/mars') } catch (e) {}
-            }}
-          />
-        </div>
+          )}
+        </>
       )}
 
-      {/* Planet overlays */}
-      <PlanetOverlay open={moonOpen} onClose={() => setMoonOpen(false)} items={researchData} name="Moon" />
-      <PlanetOverlay open={marsOpen} onClose={() => setMarsOpen(false)} items={researchData} name="Mars" />
-
-      {/* Filter popup */}
-      {showFilterPopup && (
-        <div className="filter-popup">
-          <div className="filter-popup-content">
-            <h3>Filter by Tags</h3>
-            <div className="tag-options">
-              <button className={`tag-option ${selectedTags.includes('moon') ? 'selected' : ''}`} onClick={() => toggleTag('moon')}>Moon</button>
-              <button className={`tag-option ${selectedTags.includes('mars') ? 'selected' : ''}`} onClick={() => toggleTag('mars')}>Mars</button>
-            </div>
-            <button className="close-filter-button" onClick={() => setShowFilterPopup(false)}>Apply Filters</button>
-          </div>
-        </div>
-      )}
-
-      {/* Tag Grid */}
-      {searchResults === null && <TagGrid onTagClick={handleTagClick} />}
-
-      {/* Search Results */}
-      {searchResults !== null && (
-        <div className="search-results-container">
-          <div className="search-results-header">
-            <h3>{searchResults.length} {searchResults.length === 1 ? 'Result' : 'Results'} Found</h3>
-            <button className="clear-search-btn" onClick={clearSearch}>Clear Search</button>
-          </div>
-          <div className="search-results-list">
-            {searchResults.length > 0 ? (
-              searchResults.map(article => (
-                <div key={article.id} className="search-result-item">
-                  <h4>{article.title}</h4>
-                  <p>{article.description}</p>
-                  <div className="button-row">
-                    <div className="article-tags">
-                      {article.tags.map(tag => (
-                        <span key={tag} className="article-tag">{tag}</span>
-                      ))}
-                    </div>
-                    <button className="read-more-btn">Read More →</button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="no-results"><p>No articles found matching your search.</p></div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Astronaut + Article Reader */}
-      <div className="relative min-h-screen bg-gray-950 text-white">
-        <AstronautPopup />
+      {/* Floating Chatbot Button */}
+      <div
+        onClick={() => navigate('/chatbot')}
+        style={{
+          position: 'fixed',
+          bottom: '40px',
+          right: '40px',
+          width: '70px',
+          height: '70px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          fontSize: '35px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+          zIndex: 999,
+          transition: 'transform 0.3s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+      >
+        🤖
       </div>
-      <ArticleReader />
-      {/* Chat overlay - opens when path is /chatroom or chatOpen is true */}
-      {chatOpen && (
-        <div className="chat-overlay" style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <div style={{width: '90%', maxWidth: '800px', background: 'transparent', color: 'inherit', borderRadius: '0', padding: '0', maxHeight: '90vh', overflow: 'auto'}}>
-              <Chatbot onClose={() => { try { window.history.back(); } catch (e) { try { window.history.pushState({}, '', '/') } catch (e) {} } setChatOpen(false); }} />
-          </div>
-        </div>
-      )}
     </div>
-  )
+  );
 }
-
-export default Home
-
