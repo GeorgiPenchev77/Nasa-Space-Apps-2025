@@ -1,21 +1,57 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ExternalLink } from "lucide-react";
 
+// Minimal Button component
+export const Button = ({ children, onClick, className = "" }) => (
+  <button
+    onClick={onClick}
+    className={`px-4 py-2 rounded-md font-medium transition ${className}`}
+  >
+    {children}
+  </button>
+);
 
-const ArticleCard = ({ articles = [], onClick}) => {
-    if(!articles.length) {
-        return (
+// Minimal Card + CardContent components
+export const Card = ({ children, className = "" }) => (
+  <div className={`bg-white shadow border rounded-xl ${className}`}>
+    {children}
+  </div>
+);
+
+export const CardContent = ({ children, className = "" }) => (
+  <div className={`p-4 ${className}`}>{children}</div>
+);
+
+// Minimal ExternalLink icon
+export const ExternalLink = ({ size = 16 }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="inline-block"
+  >
+    <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
+
+const LinkTree = ({ articles = [], onClick }) => {
+  if (!articles.length) {
+    return (
       <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-        <p className="text-lg font-medium">Sadly, no articles exist for this tag, but come back tommorow and maybe there will be something new!
-            We update our page every day!
+        <p className="text-lg font-medium">
+          Sadly, no articles exist for this tag, but come back tomorrow!
         </p>
       </div>
     );
   }
 
-    return (
+  return (
     <div className="max-w-3xl mx-auto mt-10 px-4">
       <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
         Related Articles
@@ -36,17 +72,17 @@ const ArticleCard = ({ articles = [], onClick}) => {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-[#00b8d9] hover:underline flex items-center gap-1"
+                  className="text-sm text-blue-600 hover:underline flex items-center gap-1"
                 >
                   Visit Article <ExternalLink size={14} />
                 </a>
               </div>
 
               <Button
-                onClick={() => onAction(article)}
-                className="bg-[#00b8d9] hover:bg-[#00a0bf] text-white rounded-xl px-4 py-2"
+                onClick={() => onClick(article.url)}
+                className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl"
               >
-                Take Action
+                Load Article
               </Button>
             </CardContent>
           </Card>
@@ -57,8 +93,3 @@ const ArticleCard = ({ articles = [], onClick}) => {
 };
 
 export default LinkTree;
-
-
-
-
-    }
