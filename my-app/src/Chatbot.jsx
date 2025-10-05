@@ -4,20 +4,33 @@ import axios from "axios";
 export default function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+    setError(null);
+    setLoading(true);
 
     const userMsg = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/chat", { message: input });
-      const botMsg = { sender: "bot", text: res.data.reply };
+      // Relative path; dev server or proxy should forward to backend at /api/gemini/chat
+      const res = await axios.post('/api/gemini/chat', { message: input });
+      const botText = res?.data?.reply ?? res?.data?.responseText ?? '(no reply)';
+      const botMsg = { sender: 'bot', text: botText };
       setMessages((prev) => [...prev, botMsg]);
     } catch (err) {
-      console.error(err);
-      setMessages((prev) => [...prev, { sender: "bot", text: "Error: could not reach the backend" }]);
+      console.error('Chat error', err);
+      const status = err?.response?.status;
+      const body = err?.response?.data;
+      const serverMsg = body?.error || body?.reply || body?.responseText || null;
+      const msg = serverMsg ? `Error ${status || ''}: ${serverMsg}` : (err.message || 'Unknown error');
+      setError(msg);
+      setMessages((prev) => [...prev, { sender: 'bot', text: `Error: ${msg}` }]);
+    } finally {
+      setLoading(false);
     }
 
     setInput("");
