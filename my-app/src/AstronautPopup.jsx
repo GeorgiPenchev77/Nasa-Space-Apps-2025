@@ -39,7 +39,11 @@ export default function AstronautPopup() {
             
             {/* Chat button */}
             <button
-              onClick={() => window.open('/chatroom', '_blank', 'noopener,noreferrer')}
+              onClick={() => {
+                try { window.history.pushState({}, '', '/chatroom'); } catch (e) {}
+                // Trigger App's popstate listener to open the chat overlay without reload
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               style={{
                 marginTop: "15px",
                 padding: "10px 20px",
