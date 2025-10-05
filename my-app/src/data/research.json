@@ -1,23 +1,50 @@
 [
   {
-    "id": "r1",
+    "id": "moon-1",
     "title": "Lunar Ice Mapping",
-    "summary": "Mapping water ice deposits in permanently shadowed regions on the Moon using radar and thermal sensing.",
-    "details": "This research combines radar reflectometry and thermal imaging to locate and quantify water ice in permanently shadowed regions on the lunar poles. Results inform future landing site selection and in-situ resource utilization planning.",
-    "year": 2024
+    "summary": "Mapping water ice deposits in permanently shadowed regions on the Moon.",
+    "details": "Radar reflectometry and thermal imaging identify and quantify water ice at the lunar poles to guide landing site selection and resource utilization.",
+    "year": 2024,
+    "tags": ["moon"]
   },
   {
-    "id": "r2",
+    "id": "moon-2",
+    "title": "Lunar Habitat Materials",
+    "summary": "Testing regolith-based construction materials for lunar habitats.",
+    "details": "Researchers evaluate sintered regolith bricks and 3D-printed structures to reduce launch mass and enable sustainable lunar bases.",
+    "year": 2025,
+    "tags": ["moon"]
+  },
+  {
+    "id": "moon-3",
+    "title": "Radiation Shielding on Moon",
+    "summary": "Assessing passive and active shielding concepts for long-duration lunar stays.",
+    "details": "Comparative studies of polyethylene, regolith berms, and active magnetic shielding inform habitat design for crew safety.",
+    "year": 2023,
+    "tags": ["moon"]
+  },
+  {
+    "id": "mars-1",
     "title": "Mars Dust Transport",
-    "summary": "Studying dust lifting and transport mechanisms on Mars to improve rover longevity and atmospheric models.",
-    "details": "High-resolution simulations and field measurements from orbiters and landers help characterize how dust is lifted and transported across different seasons and terrains on Mars. This work improves cleaning strategies for solar arrays and refines climate models.",
-    "year": 2023
+    "summary": "Studying dust lifting and transport mechanisms on Mars.",
+    "details": "Simulations and lander/orbiter observations characterize seasonal dust storms and inform rover operations and climate models.",
+    "year": 2023,
+    "tags": ["mars"]
   },
   {
-    "id": "r3",
-    "title": "Astrobiology Biosignatures",
-    "summary": "Searching for biosignatures in extreme environments and developing detection instruments.",
-    "details": "Laboratory simulation of extreme planetary environments identifies potential molecular biosignatures. The project also prototypes miniaturized spectrometers suited for lander missions.",
-    "year": 2025
+    "id": "mars-2",
+    "title": "Water on Mars",
+    "summary": "Evidence of past liquid water and subsurface ice reservoirs.",
+    "details": "Geological mapping and isotope studies indicate ancient fluvial systems and localized subsurface ice deposits relevant for astrobiology and ISRU.",
+    "year": 2022,
+    "tags": ["mars"]
+  },
+  {
+    "id": "mars-3",
+    "title": "Mars Greenhouse Trials",
+    "summary": "Testing plant growth under simulated Martian conditions.",
+    "details": "Controlled-environment experiments assess plant resilience to low pressure, CO2-rich atmospheres, and Martian regolith simulants for bioregenerative life support.",
+    "year": 2025,
+    "tags": ["mars"]
   }
 ]
