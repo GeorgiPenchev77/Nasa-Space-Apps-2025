@@ -5,16 +5,14 @@ import Modal from './Modal'
 export default function SwipeDeck({ items = [] }) {
   // keep a local mutable list so we can remove swiped cards
   const [localItems, setLocalItems] = useState(items.slice())
-  // flip this to true if visual dragging appears inverted on your machine
-  const INVERT_DRAG = false
   const [index, setIndex] = useState(0)
   const [pos, setPos] = useState({ x: 0, y: 0, rotating: 0 })
   const [dragging, setDragging] = useState(false)
   const [animating, setAnimating] = useState(null)
   const [selected, setSelected] = useState(null)
   const startRef = useRef(null)
+  const velocityRef = useRef({ time: 0, x: 0 })
   const rootRef = useRef(null)
-  const lastRawRef = useRef(0)
   const wheelAccumRef = useRef(0)
   const wheelTimeoutRef = useRef(null)
 
@@ -33,7 +31,8 @@ export default function SwipeDeck({ items = [] }) {
     const p = getPoint(e)
     startRef.current = { x: p.x, y: p.y, el: e.currentTarget, id: e.pointerId }
     try { if (e.currentTarget && e.pointerId && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId) } catch (err) {}
-    setDragging(true)
+  setDragging(true)
+  velocityRef.current = { time: Date.now(), x: p.x }
     window.addEventListener('pointermove', onPointerMove)
     window.addEventListener('pointerup', onPointerUp)
     window.addEventListener('pointercancel', onPointerUp)
@@ -44,11 +43,9 @@ export default function SwipeDeck({ items = [] }) {
     const p = getPoint(e)
     const dx = p.x - startRef.current.x
     const dy = p.y - startRef.current.y
-    // store raw delta for direction checks
-    lastRawRef.current = dx
-    // visualX may need to be inverted to match pointer movement on this layout
-    const visualX = INVERT_DRAG ? -dx : dx
-    setPos({ x: visualX, y: dy, rotating: visualX / 20 })
+    setPos({ x: dx, y: dy, rotating: dx / 20 })
+    // track last pointer sample for velocity estimate
+    velocityRef.current = { time: Date.now(), x: p.x }
   }
 
   function onPointerUp() {
@@ -57,12 +54,10 @@ export default function SwipeDeck({ items = [] }) {
     window.removeEventListener('pointercancel', onPointerUp)
     try { const s = startRef.current; if (s && s.el && s.id && s.el.releasePointerCapture) s.el.releasePointerCapture(s.id) } catch (err) {}
     const threshold = 120
-    // use raw delta to determine swipe direction (avoids visual inversion issues)
-    const rawDx = lastRawRef.current || pos.x || 0
-    if (rawDx > threshold) {
+    if (pos.x > threshold) {
       animateAndAdvance('right')
       return
-    } else if (rawDx < -threshold) {
+    } else if (pos.x < -threshold) {
       animateAndAdvance('left')
       return
     }
@@ -74,13 +69,20 @@ export default function SwipeDeck({ items = [] }) {
   function animateAndAdvance(dir) {
     if (localItems.length === 0) return
     setAnimating(dir)
-    // Determine exit target based on current drag position magnitude but use dir for sign
-    // prefer raw delta for magnitude (avoids visual inversion issues)
-    const currentX = lastRawRef.current || pos.x || 0
-    // prefer the actual pointer direction for exit sign; fall back to dir when not available
-    const rawSign = Math.sign(lastRawRef.current || 0)
-    const sign = rawSign !== 0 ? rawSign : (dir === 'right' ? 1 : -1)
-    const exitX = sign * Math.max(800, Math.abs(currentX)) * 1.5
+    // Determine exit target based on current drag position so direction follows user's swipe
+    const currentX = pos.x || 0
+    // map direction to exit sign so right => positive X, left => negative X
+    const sign = dir === 'right' ? 1 : -1
+
+    // velocity-based extra distance (px)
+    const { time: sampleT, x: sampleX } = velocityRef.current || { time: 0, x: 0 }
+    const dt = Math.max(1, Date.now() - sampleT)
+    const vel = (currentX - (sampleX || 0)) / dt // px/ms
+    const speed = vel * 1000 // px/s
+    const extra = Math.min(2200, Math.abs(speed) * 0.6) // tuned multiplier
+
+    const base = Math.max(800, Math.abs(currentX))
+    const exitX = (base + extra) * sign * 1.5
     setPos({ x: exitX, y: 0, rotating: exitX / 40 })
     setTimeout(() => {
       // remove the top card
@@ -105,22 +107,18 @@ export default function SwipeDeck({ items = [] }) {
     if (mode === 1) dx = dx * 16
     if (mode === 2) dx = dx * 800
     dx = dx * 1.4
-  // use wheel delta: keep raw dx for detection but invert visual movement if needed
-  const raw = dx
-  const visualDelta = -dx
-  wheelAccumRef.current += raw
-  lastRawRef.current = raw
-  setDragging(true)
-  setPos((prev) => ({ x: prev.x + visualDelta, y: prev.y, rotating: (prev.x + visualDelta) / 20 }))
+    wheelAccumRef.current += dx
+    setDragging(true)
+    setPos((prev) => ({ x: prev.x + dx, y: prev.y, rotating: (prev.x + dx) / 20 }))
     if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current)
     wheelTimeoutRef.current = setTimeout(() => {
       const threshold = 120
       const total = wheelAccumRef.current
       wheelAccumRef.current = 0
       wheelTimeoutRef.current = null
-  setDragging(false)
-  if (total > threshold) animateAndAdvance('right')
-  else if (total < -threshold) animateAndAdvance('left')
+      setDragging(false)
+      if (total > threshold) animateAndAdvance('right')
+      else if (total < -threshold) animateAndAdvance('left')
       else setPos({ x: 0, y: 0, rotating: 0 })
     }, 120)
   }
@@ -151,7 +149,7 @@ export default function SwipeDeck({ items = [] }) {
           const offset = i * 12
           const scale = 1 - i * 0.04
           const style = isTop
-            ? { transform: `translate(${pos.x}px, ${pos.y}px) rotate(${pos.rotating}deg)`, transition: animating || !dragging ? 'transform 350ms ease' : 'none', zIndex: 10 - i }
+            ? { transform: `translate(${-pos.x}px, ${-pos.y}px) rotate(${-pos.rotating}deg)`, transition: animating || !dragging ? 'transform 350ms ease' : 'none', zIndex: 10 - i }
             : { transform: `translateY(${offset}px) scale(${scale})`, zIndex: 10 - i }
           return (
             <div key={it.id} className="card-wrapper" style={style} onPointerDown={isTop ? onPointerDown : undefined} onWheel={isTop ? onWheel : undefined}>
