@@ -4,6 +4,7 @@ import apiClient from '../utils/apiClient';
 import { ArrowLeft } from 'lucide-react';
 import ArticleSidebar from '../components/ArticleSidebar';
 import ArticleWindow from '../components/ArticleWindow';
+import FloatingChatButton from '../components/ChatbotButton';
 
 const wrapperStyle = {
   minHeight: '100vh',
@@ -175,6 +176,7 @@ export default function ArticleViewerPage({ params = {} }) {
           )}
         </div>
       </div>
+      <FloatingChatButton/>
     </div>
   );
 }

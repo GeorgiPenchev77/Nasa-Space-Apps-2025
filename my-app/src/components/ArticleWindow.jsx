@@ -163,7 +163,7 @@ export default function ArticleWindow({ article }) {
       const xmlDoc = parser.parseFromString(res.data, "application/xml");
 
       const passages = xmlDoc.getElementsByTagName("passage");
-      let abstract = "Abstract\n\n";
+      let abstract = "";
 
       for (let i = 0; i < passages.length; i++) {
         const infons = passages[i].getElementsByTagName("infon");
@@ -186,7 +186,7 @@ export default function ArticleWindow({ article }) {
         }
       }
 
-      setAbstractText(abstract.trim() || "No abstract available for this article.");
+      setAbstractText( ("Abstract\n\n" + abstract.trim()) || "No abstract available for this article.");
     } catch (err) {
       console.error("Error fetching abstract:", err);
       setError("Failed to load abstract.");
