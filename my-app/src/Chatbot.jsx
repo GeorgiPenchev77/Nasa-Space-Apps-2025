@@ -12,7 +12,8 @@ export default function Chatbot() {
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/chat", { message: input });
+  // server exposes Gemini chat at /api/gemini/chat (server default port 3000)
+  const res = await axios.post("http://localhost:3000/api/gemini/chat", { message: input });
       const botMsg = { sender: "bot", text: res.data.reply };
       setMessages((prev) => [...prev, botMsg]);
     } catch (err) {
